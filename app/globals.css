@@ -418,36 +418,6 @@ html {
   body {
     @apply bg-background text-foreground;
   }
-  
-  /* Ensure AI response text is always visible */
-  [data-role="assistant"] {
-    color: hsl(var(--foreground));
-  }
-  
-  [data-role="assistant"] *:not(pre):not(code) {
-    color: hsl(var(--foreground));
-  }
-  
-  /* Markdown content styling */
-  [data-role="assistant"] .prose,
-  [data-role="assistant"] .prose * {
-    color: hsl(var(--foreground));
-  }
-  
-  /* Ensure code blocks stand out */
-  [data-role="assistant"] pre,
-  [data-role="assistant"] pre * {
-    color: inherit !important;
-  }
-  
-  /* Inline code styling */
-  [data-role="assistant"] code:not(pre code) {
-    background: hsl(var(--muted));
-    color: hsl(var(--foreground));
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.875em;
-  }
 }
 
 /* ============================================
