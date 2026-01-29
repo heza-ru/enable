@@ -101,6 +101,43 @@ export function sanitizeText(text?: string) {
   return safe.replace("<has_function_call>", "");
 }
 
+// Extract text from a message part with many possible shapes. Some parts
+// produced by provider/streaming code can nest text under different keys
+// (e.g., `text`, `content.value`, `content`, or arrays). This helper
+// provides a best-effort string extraction so UI rendering remains robust.
+export function extractPartText(part: unknown): string {
+  if (part == null) return "";
+  if (typeof part === "string") return part;
+
+  // Try common shapes
+  try {
+    const p: any = part as any;
+
+    if (typeof p.text === "string") return p.text;
+
+    if (typeof p.content === "string") return p.content;
+
+    if (p.content && typeof p.content === "object") {
+      if (typeof p.content.value === "string") return p.content.value;
+      if (typeof p.content.text === "string") return p.content.text;
+      // If content is an array, flatten
+      if (Array.isArray(p.content)) {
+        return p.content.map((c: any) => extractPartText(c)).join("");
+      }
+    }
+
+    if (typeof p.value === "string") return p.value;
+    if (typeof p.body === "string") return p.body;
+
+    // Fallback: try to stringify simple primitives
+    if (typeof p === "number" || typeof p === "boolean") return String(p);
+  } catch (err) {
+    // ignore
+  }
+
+  return "";
+}
+
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
   return messages.map((message) => ({
     id: message.id,

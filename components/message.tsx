@@ -3,7 +3,8 @@ import type { UseChatHelpers } from "@ai-sdk/react";
 import { useState } from "react";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
-import { cn, sanitizeText } from "@/lib/utils";
+import { cn, sanitizeText, extractPartText } from "@/lib/utils";
+import { SpreadsheetEditor } from "./sheet-editor";
 import { useDataStream } from "./data-stream-provider";
 import { DocumentToolResult } from "./document";
 import { DocumentPreview } from "./document-preview";
@@ -126,7 +127,8 @@ const PurePreviewMessage = ({
 
             if (type === "text") {
               if (mode === "view") {
-                const textContent = sanitizeText(part.text);
+                const raw = extractPartText(part);
+                const textContent = sanitizeText(raw);
                 const isStreamingPart =
                   typeof part === "object" && "state" in part &&
                   (part as any).state === "streaming";
@@ -134,10 +136,27 @@ const PurePreviewMessage = ({
                 const looksLikeMarkdown = (s: string) =>
                   /(^#{1,6}\s)|(```)|(`[^`])|(\*\*)|(\[.+\]\(.+\))|(!\[)/m.test(s);
 
+                const looksLikeCsv = (s: string) => {
+                  if (!s) return false;
+                  const lines = s.split(/\r?\n/).filter((l) => l.trim().length > 0);
+                  if (lines.length < 2) return false;
+                  const counts = lines.slice(0, Math.min(5, lines.length)).map((l) => l.split(",").length);
+                  // If most of the lines have more than 1 column and counts are similar
+                  const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
+                  return avg >= 2 && Math.min(...counts) / Math.max(...counts) >= 0.5;
+                };
+
+                const looksLikeEmail = (s: string) => {
+                  if (!s) return false;
+                  const hasHeaders = /(From:|To:|Subject:)/i.test(s);
+                  // also check for typical email separators
+                  return hasHeaders;
+                };
+
                 console.log("[Message Debug] Text part:", {
                   role: message.role,
                   textContent,
-                  partText: part.text,
+                  part,
                   partType: type,
                   isStreamingPart,
                   looksLikeMarkdown: looksLikeMarkdown(textContent),
@@ -159,7 +178,25 @@ const PurePreviewMessage = ({
                           : undefined
                       }
                     >
-                      {isStreamingPart || looksLikeMarkdown(textContent) ? (
+                      {looksLikeCsv(textContent) ? (
+                        <div className="p-2">
+                          <div className="mb-2 text-xs text-muted-foreground">Spreadsheet preview</div>
+                          <div className="h-64 overflow-hidden rounded border">
+                            <SpreadsheetEditor
+                              content={textContent}
+                              saveContent={() => null}
+                              currentVersionIndex={0}
+                              isCurrentVersion={true}
+                              status={isStreamingPart ? "streaming" : "idle"}
+                            />
+                          </div>
+                        </div>
+                      ) : looksLikeEmail(textContent) ? (
+                        <div className="rounded-lg border p-3">
+                          <div className="mb-2 text-sm font-medium">Email</div>
+                          <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
+                        </div>
+                      ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
                         <Response>{textContent}</Response>
                       ) : (
                         <div data-testid="message-text" className="whitespace-pre-wrap">
