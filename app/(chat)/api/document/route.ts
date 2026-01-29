@@ -1,11 +1,10 @@
-import { auth } from "@/app/(auth)/auth";
 import type { ArtifactKind } from "@/components/artifact";
+import { ChatSDKError } from "@/lib/errors";
 import {
   deleteDocumentsByIdAfterTimestamp,
   getDocumentsById,
   saveDocument,
-} from "@/lib/db/queries";
-import { ChatSDKError } from "@/lib/errors";
+} from "@/lib/storage/document-store";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -18,22 +17,13 @@ export async function GET(request: Request) {
     ).toResponse();
   }
 
-  const session = await auth();
-
-  if (!session?.user) {
-    return new ChatSDKError("unauthorized:document").toResponse();
-  }
-
+  // Enable is client-side only - documents stored in IndexedDB
   const documents = await getDocumentsById({ id });
 
   const [document] = documents;
 
   if (!document) {
     return new ChatSDKError("not_found:document").toResponse();
-  }
-
-  if (document.userId !== session.user.id) {
-    return new ChatSDKError("forbidden:document").toResponse();
   }
 
   return Response.json(documents, { status: 200 });
@@ -50,11 +40,7 @@ export async function POST(request: Request) {
     ).toResponse();
   }
 
-  const session = await auth();
-
-  if (!session?.user) {
-    return new ChatSDKError("not_found:document").toResponse();
-  }
+  // Enable is client-side only - no authentication required
 
   const {
     content,
@@ -63,22 +49,12 @@ export async function POST(request: Request) {
   }: { content: string; title: string; kind: ArtifactKind } =
     await request.json();
 
-  const documents = await getDocumentsById({ id });
-
-  if (documents.length > 0) {
-    const [doc] = documents;
-
-    if (doc.userId !== session.user.id) {
-      return new ChatSDKError("forbidden:document").toResponse();
-    }
-  }
-
   const document = await saveDocument({
     id,
     content,
     title,
     kind,
-    userId: session.user.id,
+    userId: "local-user", // Client-side only user
   });
 
   return Response.json(document, { status: 200 });
@@ -103,19 +79,7 @@ export async function DELETE(request: Request) {
     ).toResponse();
   }
 
-  const session = await auth();
-
-  if (!session?.user) {
-    return new ChatSDKError("unauthorized:document").toResponse();
-  }
-
-  const documents = await getDocumentsById({ id });
-
-  const [document] = documents;
-
-  if (document.userId !== session.user.id) {
-    return new ChatSDKError("forbidden:document").toResponse();
-  }
+  // Enable is client-side only - no authentication required
 
   const documentsDeleted = await deleteDocumentsByIdAfterTimestamp({
     id,

@@ -4,31 +4,37 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import useSWR, { useSWRConfig } from "swr";
-import { unstable_serialize } from "swr/infinite";
+import useSWR from "swr";
 import { ChatHeader } from "@/components/chat-header";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { ExportDialog } from "@/components/export-dialog";
 import { useArtifactSelector } from "@/hooks/use-artifact";
 import { useAutoResume } from "@/hooks/use-auto-resume";
 import { useChatVisibility } from "@/hooks/use-chat-visibility";
+import { extractTokenUsage } from "@/lib/ai/pricing";
 import type { Vote } from "@/lib/db/schema";
 import { ChatSDKError } from "@/lib/errors";
+import { getApiKey } from "@/lib/storage/api-keys";
+import {
+  createChat,
+  getChat,
+  getMessagesByChatId,
+  saveMessage,
+  updateChatTitle,
+} from "@/lib/storage/chat-store";
+import { saveCost } from "@/lib/storage/cost-store";
+import {
+  getPersonalizationPrompt,
+  getUserName,
+  getUserProfile,
+  getUserRole,
+} from "@/lib/storage/user-profile";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { fetcher, fetchWithErrorHandlers, generateUUID } from "@/lib/utils";
 import { Artifact } from "./artifact";
+import type { ContextData } from "./context-panel";
 import { useDataStream } from "./data-stream-provider";
 import { Messages } from "./messages";
 import { MultimodalInput } from "./multimodal-input";
-import { getChatHistoryPaginationKey } from "./sidebar-history";
 import { toast } from "./toast";
 import type { VisibilityType } from "./visibility-selector";
 
@@ -54,8 +60,6 @@ export function Chat({
     initialVisibilityType,
   });
 
-  const { mutate } = useSWRConfig();
-
   // Handle browser back/forward navigation
   useEffect(() => {
     const handlePopState = () => {
@@ -64,18 +68,132 @@ export function Chat({
     };
 
     window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
   }, [router]);
   const { setDataStream } = useDataStream();
 
   const [input, setInput] = useState<string>("");
-  const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
   const currentModelIdRef = useRef(currentModelId);
+
+  // Helper to map user role to persona type
+  const mapRoleToPersona = (
+    role: string | null
+  ): "solution-consultant" | "sales-engineer" | "generic" => {
+    if (!role) return "generic";
+    const normalized = role.toLowerCase().replace(/\s+/g, "-");
+    if (normalized === "solution-consultant") return "solution-consultant";
+    if (normalized === "sales-engineer") return "sales-engineer";
+    return "generic";
+  };
+
+  // Context state - Load from user profile
+  const [context, setContext] = useState<ContextData>(() => {
+    const userRole = getUserRole();
+    return {
+      persona: mapRoleToPersona(userRole),
+      customer: "",
+      industry: "",
+      scope: "",
+    };
+  });
+  const contextRef = useRef(context);
+
+  // User personalization and identity
+  const [userPersonalization, setUserPersonalization] = useState<
+    string | undefined
+  >(undefined);
+  const userPersonalizationRef = useRef(userPersonalization);
+  const [userName, setUserName] = useState<string | null>(null);
+  const userNameRef = useRef(userName);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const userRoleRef = useRef(userRole);
+
+  // Load user profile data on mount
+  useEffect(() => {
+    const personalization = getPersonalizationPrompt();
+    const fullProfile = getUserProfile();
+    const loadedUserRole = getUserRole();
+    const loadedUserName = getUserName();
+
+    console.log("[User Profile] Loaded on mount:", {
+      name: loadedUserName,
+      role: loadedUserRole,
+      personalization,
+      fullProfile,
+    });
+
+    // Update context with user's role
+    if (loadedUserRole) {
+      setContext((prev) => ({
+        ...prev,
+        persona: mapRoleToPersona(loadedUserRole),
+      }));
+    }
+
+    // Set all user profile data
+    setUserPersonalization(personalization || undefined);
+    userPersonalizationRef.current = personalization || undefined;
+    setUserName(loadedUserName);
+    userNameRef.current = loadedUserName;
+    setUserRole(loadedUserRole);
+    userRoleRef.current = loadedUserRole;
+  }, [mapRoleToPersona]);
+
+  // Create chat in IndexedDB on mount and load messages
+  useEffect(() => {
+    const initialize = async () => {
+      // Create chat in IndexedDB if it doesn't exist
+      const existingChat = await getChat(id);
+      if (existingChat) {
+        // Load existing messages from IndexedDB if no initial messages provided
+        if (initialMessages.length === 0) {
+          const storedMessages = await getMessagesByChatId(id);
+          if (storedMessages.length > 0) {
+            console.log(
+              "[Chat] Loading",
+              storedMessages.length,
+              "messages from IndexedDB"
+            );
+            // Convert stored messages to chat messages format
+            const chatMessages: ChatMessage[] = storedMessages.map((msg) => ({
+              id: msg.id,
+              role: msg.role as "user" | "assistant",
+              parts: msg.parts || [],
+              createdAt: msg.createdAt,
+            }));
+            setMessages(chatMessages);
+          }
+        }
+      } else {
+        await createChat("New chat", initialChatModel, id);
+      }
+    };
+    initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, initialChatModel, initialMessages.length]); // Only run when chat id changes
 
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
   }, [currentModelId]);
+
+  useEffect(() => {
+    contextRef.current = context;
+  }, [context]);
+
+  useEffect(() => {
+    userPersonalizationRef.current = userPersonalization;
+  }, [userPersonalization]);
+
+  useEffect(() => {
+    userNameRef.current = userName;
+  }, [userName]);
+
+  useEffect(() => {
+    userRoleRef.current = userRole;
+  }, [userRole]);
 
   const {
     messages,
@@ -104,28 +222,38 @@ export function Chat({
     },
     transport: new DefaultChatTransport({
       api: "/api/chat",
-      fetch: fetchWithErrorHandlers,
+      fetch: async (url, options) => {
+        // Get API key and add to headers
+        const apiKey = await getApiKey();
+        if (!apiKey) {
+          toast.error("API key is missing. Please check Settings.");
+          throw new Error("API key is required");
+        }
+
+        const headers = {
+          ...options?.headers,
+          "x-api-key": apiKey,
+        };
+
+        return fetchWithErrorHandlers(url, { ...options, headers });
+      },
       prepareSendMessagesRequest(request) {
-        const lastMessage = request.messages.at(-1);
-        const isToolApprovalContinuation =
-          lastMessage?.role !== "user" ||
-          request.messages.some((msg) =>
-            msg.parts?.some((part) => {
-              const state = (part as { state?: string }).state;
-              return (
-                state === "approval-responded" || state === "output-denied"
-              );
-            })
-          );
+        // ALWAYS send full conversation history for proper context
+        console.log("[Chat] Sending messages to API:", {
+          messageCount: request.messages.length,
+          lastMessageRole: request.messages.at(-1)?.role,
+        });
 
         return {
           body: {
             id: request.id,
-            ...(isToolApprovalContinuation
-              ? { messages: request.messages }
-              : { message: lastMessage }),
+            messages: request.messages, // Send full conversation history
             selectedChatModel: currentModelIdRef.current,
             selectedVisibilityType: visibilityType,
+            context: contextRef.current,
+            userPersonalization: userPersonalizationRef.current,
+            userName: userNameRef.current,
+            userRole: userRoleRef.current,
             ...request.body,
           },
         };
@@ -134,21 +262,89 @@ export function Chat({
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
     },
-    onFinish: () => {
-      mutate(unstable_serialize(getChatHistoryPaginationKey));
+    onFinish: async ({ messages: finishedMessages, response }) => {
+      // Save messages to IndexedDB
+      for (const msg of finishedMessages) {
+        await saveMessage({
+          chatId: id,
+          id: msg.id,
+          role: msg.role,
+          parts: msg.parts || [],
+          createdAt: Date.now(),
+        });
+      }
+
+      // Extract and save cost information
+      try {
+        const assistantMessage = finishedMessages.find(
+          (m) => m.role === "assistant"
+        );
+        if (assistantMessage && response) {
+          console.log(
+            "[Cost Tracking] Response object keys:",
+            Object.keys(response || {})
+          );
+          console.log("[Cost Tracking] Response structure:", {
+            hasUsage: !!response?.usage,
+            hasProviderMetadata: !!response?.experimental_providerMetadata,
+            response,
+          });
+
+          const tokenUsage = extractTokenUsage(response);
+          console.log("[Cost Tracking] Extracted token usage:", tokenUsage);
+
+          if (tokenUsage) {
+            await saveCost(
+              id,
+              assistantMessage.id,
+              currentModelIdRef.current,
+              tokenUsage.inputTokens,
+              tokenUsage.outputTokens
+            );
+            console.log("[Cost Tracking] Cost saved successfully:", {
+              inputTokens: tokenUsage.inputTokens,
+              outputTokens: tokenUsage.outputTokens,
+              model: currentModelIdRef.current,
+            });
+          } else {
+            console.warn(
+              "[Cost Tracking] No token usage extracted from response"
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Failed to save cost:", error);
+      }
+
+      // Auto-generate title from first user message
+      try {
+        const chat = await getChat(id);
+        if (chat && chat.title === "New chat") {
+          const firstUserMessage = finishedMessages.find(
+            (m) => m.role === "user"
+          );
+          if (firstUserMessage?.parts) {
+            const textPart = firstUserMessage.parts.find(
+              (p: any) => p.type === "text"
+            );
+            if (textPart && "text" in textPart) {
+              const messageText = textPart.text as string;
+              const title =
+                messageText.length > 50
+                  ? `${messageText.slice(0, 50).trim()}...`
+                  : messageText.trim();
+              await updateChatTitle(id, title);
+              router.refresh();
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to generate title:", error);
+      }
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        if (
-          error.message?.includes("AI Gateway requires a valid credit card")
-        ) {
-          setShowCreditCardAlert(true);
-        } else {
-          toast({
-            type: "error",
-            description: error.message,
-          });
-        }
+        toast.error(error.message);
       }
     },
   });
@@ -177,6 +373,19 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [chatTitle, setChatTitle] = useState("New chat");
+
+  // Load chat title
+  useEffect(() => {
+    const loadChatTitle = async () => {
+      const chat = await getChat(id);
+      if (chat?.title) {
+        setChatTitle(chat.title);
+      }
+    };
+    loadChatTitle();
+  }, [id]);
 
   useAutoResume({
     autoResume,
@@ -185,12 +394,32 @@ export function Chat({
     setMessages,
   });
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    // Focus the input after setting the value
+    setTimeout(() => {
+      const inputElement = document.querySelector("textarea");
+      inputElement?.focus();
+    }, 100);
+  };
+
+  const handleTemplateSelect = (templatePrompt: string) => {
+    setInput(templatePrompt);
+    // Focus the input after setting the value
+    setTimeout(() => {
+      const inputElement = document.querySelector("textarea");
+      inputElement?.focus();
+    }, 100);
+  };
+
   return (
     <>
       <div className="overscroll-behavior-contain flex h-dvh min-w-0 touch-pan-y flex-col bg-background">
         <ChatHeader
           chatId={id}
           isReadonly={isReadonly}
+          onExportClick={() => setShowExportDialog(true)}
+          onTemplateSelect={handleTemplateSelect}
           selectedVisibilityType={initialVisibilityType}
         />
 
@@ -200,6 +429,7 @@ export function Chat({
           isArtifactVisible={isArtifactVisible}
           isReadonly={isReadonly}
           messages={messages}
+          onSuggestionClick={handleSuggestionClick}
           regenerate={regenerate}
           selectedModelId={initialChatModel}
           setMessages={setMessages}
@@ -207,7 +437,7 @@ export function Chat({
           votes={votes}
         />
 
-        <div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl gap-2 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
+        <div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl flex-col gap-2 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
           {!isReadonly && (
             <MultimodalInput
               attachments={attachments}
@@ -247,35 +477,12 @@ export function Chat({
         votes={votes}
       />
 
-      <AlertDialog
-        onOpenChange={setShowCreditCardAlert}
-        open={showCreditCardAlert}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Activate AI Gateway</AlertDialogTitle>
-            <AlertDialogDescription>
-              This application requires{" "}
-              {process.env.NODE_ENV === "production" ? "the owner" : "you"} to
-              activate Vercel AI Gateway.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                window.open(
-                  "https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dadd-credit-card",
-                  "_blank"
-                );
-                window.location.href = "/";
-              }}
-            >
-              Activate
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ExportDialog
+        chatTitle={chatTitle}
+        messages={messages}
+        onOpenChange={setShowExportDialog}
+        open={showExportDialog}
+      />
     </>
   );
 }

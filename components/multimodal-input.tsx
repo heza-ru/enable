@@ -32,6 +32,7 @@ import {
   DEFAULT_CHAT_MODEL,
   modelsByProvider,
 } from "@/lib/ai/models";
+import { sanitizeChatInput } from "@/lib/security/sanitize";
 import type { Attachment, ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -43,9 +44,9 @@ import {
 } from "./elements/prompt-input";
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons";
 import { PreviewAttachment } from "./preview-attachment";
-import { SuggestedActions } from "./suggested-actions";
 import { Button } from "./ui/button";
 import type { VisibilityType } from "./visibility-selector";
+import { VoiceInput } from "./voice-input";
 
 function setCookie(name: string, value: string) {
   const maxAge = 60 * 60 * 24 * 365; // 1 year
@@ -92,6 +93,17 @@ function PureMultimodalInput({
       textareaRef.current.style.height = "44px";
     }
   }, []);
+
+  const handleVoiceTranscript = useCallback(
+    (transcript: string) => {
+      setInput((prev) => {
+        const newInput = prev ? `${prev} ${transcript}` : transcript;
+        return newInput;
+      });
+      textareaRef.current?.focus();
+    },
+    [setInput]
+  );
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -145,6 +157,14 @@ function PureMultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<string[]>([]);
 
   const submitForm = useCallback(() => {
+    // Sanitize input before sending
+    const sanitizedInput = sanitizeChatInput(input);
+
+    if (!sanitizedInput.trim()) {
+      toast.error("Please enter a message");
+      return;
+    }
+
     window.history.pushState({}, "", `/chat/${chatId}`);
 
     sendMessage({
@@ -158,7 +178,7 @@ function PureMultimodalInput({
         })),
         {
           type: "text",
-          text: input,
+          text: sanitizedInput,
         },
       ],
     });
@@ -297,16 +317,6 @@ function PureMultimodalInput({
 
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
-      {messages.length === 0 &&
-        attachments.length === 0 &&
-        uploadQueue.length === 0 && (
-          <SuggestedActions
-            chatId={chatId}
-            selectedVisibilityType={selectedVisibilityType}
-            sendMessage={sendMessage}
-          />
-        )}
-
       <input
         className="pointer-events-none fixed -top-4 -left-4 size-0.5 opacity-0"
         multiple
@@ -317,7 +327,7 @@ function PureMultimodalInput({
       />
 
       <PromptInput
-        className="rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
+        className="rounded-xl border border-[#2a2836] bg-background p-2 shadow-sm transition-all duration-200 hover:shadow-md focus-within:border-primary/50 focus-within:shadow-md sm:p-3 md:rounded-2xl"
         onSubmit={(event) => {
           event.preventDefault();
           if (!input.trim() && attachments.length === 0) {
@@ -383,6 +393,10 @@ function PureMultimodalInput({
               fileInputRef={fileInputRef}
               selectedModelId={selectedModelId}
               status={status}
+            />
+            <VoiceInput
+              isDisabled={status !== "ready"}
+              onTranscript={handleVoiceTranscript}
             />
             <ModelSelectorCompact
               onModelChange={onModelChange}

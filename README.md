@@ -1,71 +1,126 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Chat SDK</h1>
-</a>
+<h1 align="center">Enable by Whatfix</h1>
 
 <p align="center">
-    Chat SDK is a free, open-source template built with Next.js and the AI SDK that helps you quickly build powerful chatbot applications.
+    A free, secure, internal AI assistant for Solution Consultants and Sales Engineers at Whatfix. Powered by Claude API with client-side architecture.
 </p>
 
 <p align="center">
-  <a href="https://chat-sdk.dev"><strong>Read Docs</strong></a> ·
   <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
+  <a href="#getting-started"><strong>Getting Started</strong></a> ·
+  <a href="#security"><strong>Security</strong></a> ·
+  <a href="#running-locally"><strong>Running Locally</strong></a>
 </p>
 <br/>
 
 ## Features
 
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://ai-sdk.dev/docs/introduction)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports xAI (default), OpenAI, Fireworks, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Neon Serverless Postgres](https://vercel.com/marketplace/neon) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
-- [Auth.js](https://authjs.dev)
-  - Simple and secure authentication
+### Core Capabilities
+- **Claude 4.5 Integration** - Direct API access to Claude Sonnet 4.5, Haiku 4.5, and Opus 4.5
+- **Client-Side First** - No server-side API key storage, all data stored locally in IndexedDB
+- **Cost Tracking** - Real-time token counting and cost estimation per message, chat, and session
+- **Artifact Support** - Code editor, spreadsheet editor, image generation, and structured outputs
+- **Demo Mode** - One-click conversation reset for seamless live demos
 
-## Model Providers
+### Manus-Level UX
+- **Persona Selector** - Solution Consultant, Sales Engineer, or Generic Assistant modes
+- **Context Layering** - Pin customer, industry, and scope context to all conversations
+- **Prompt Shortcuts** - Quick access to demo scripts, slide outlines, objection handling, competitive comparisons
+- **Structured Outputs** - JSON rendering for slides, emails, walkthroughs, and more
 
-This template uses the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) to access multiple AI models through a unified interface. The default configuration includes [xAI](https://x.ai) models (`grok-2-vision-1212`, `grok-3-mini`) routed through the gateway.
+### Security & Privacy
+- **Client-Side API Keys** - Your API keys never leave your browser
+- **No Backend Storage** - All chat data stored in IndexedDB (local-first)
+- **HTTPS Only** - Secure connections enforced in production
+- **Zero Infrastructure Costs** - Free static hosting on Vercel/Netlify
 
-### AI Gateway Authentication
+## Getting Started
 
-**For Vercel deployments**: Authentication is handled automatically via OIDC tokens.
+### 1. Get Your Claude API Key
 
-**For non-Vercel deployments**: You need to provide an AI Gateway API key by setting the `AI_GATEWAY_API_KEY` environment variable in your `.env.local` file.
+1. Sign up for an Anthropic account at [console.anthropic.com](https://console.anthropic.com/)
+2. Generate an API key from your account settings
+3. **Important**: Keep this key secure - it will only be stored in your browser
 
-With the [AI SDK](https://ai-sdk.dev/docs/introduction), you can also switch to direct LLM providers like [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://ai-sdk.dev/providers/ai-sdk-providers) with just a few lines of code.
+### 2. Run Enable
 
-## Deploy Your Own
+On first launch, you'll be prompted to enter your Claude API key. Choose:
+- **Memory Only** (recommended for demos): Key is cleared when you close the browser
+- **Encrypted Local Storage**: Key persists across sessions, encrypted with Web Crypto API
 
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
+### 3. Start Chatting
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/templates/next.js/nextjs-ai-chatbot)
+- Select your Claude model (Sonnet 4.5 recommended for demos)
+- Choose your persona (Solution Consultant or Sales Engineer)
+- Add customer context for personalized responses
+- Use prompt shortcuts for common tasks (Cmd/Ctrl + K)
 
-## Running locally
+## Security
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+### API Key Handling
+- ✅ Keys stored only in browser memory or encrypted localStorage
+- ✅ Keys never sent to any server except api.anthropic.com
+- ✅ Auto-clear after 30 minutes of inactivity
+- ✅ Manual clear button always available
+- ✅ No logging in production
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
+### Data Privacy
+- ✅ All chat history stored in IndexedDB (local-first)
+- ✅ No server-side database
+- ✅ Export/import your data anytime
+- ✅ Optional cloud sync (future: Supabase with RLS)
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+### Cost Transparency
+- ✅ Token counts extracted from Claude API responses
+- ✅ Costs calculated using official pricing: [claude.com/pricing](https://platform.claude.com/docs/en/about-claude/pricing)
+- ✅ Per-message, per-chat, and session totals displayed
+- ✅ Export cost reports to CSV
+
+## Running Locally
+
+Enable is a client-side application with **no environment variables required**:
 
 ```bash
+# Install dependencies
 pnpm install
-pnpm db:migrate # Setup database or apply latest database changes
+
+# Start development server
 pnpm dev
 ```
 
-Your app template should now be running on [localhost:3000](http://localhost:3000).
+Your app should now be running on [localhost:3000](http://localhost:3000).
+
+**First time setup:**
+1. Open the app in your browser
+2. Enter your Claude API key when prompted
+3. Start chatting!
+
+## Deployment
+
+Deploy to Vercel (free tier):
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+**No environment variables needed** - the app is fully client-side!
+
+## Architecture
+
+Enable uses a client-first architecture:
+- **Frontend**: Next.js 14 with App Router, React Server Components
+- **UI**: shadcn/ui with Tailwind CSS and lucide-react icons
+- **AI**: Direct integration with Anthropic's Claude API
+- **Storage**: IndexedDB for local-first chat history
+- **Deployment**: Static export to Vercel/Netlify free tier
+
+## License
+
+MIT License - See LICENSE file for details.
+
+## Support
+
+For issues, questions, or feature requests, please contact your Whatfix team lead.

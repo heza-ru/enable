@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { ConsoleGuard } from "@/components/console-guard";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Next.js Chatbot Template",
-  description: "Next.js chatbot template using the AI SDK.",
+  metadataBase: new URL("https://enable.whatfix.com"),
+  title: "Enable by Whatfix",
+  description:
+    "AI-powered assistant for Solution Consultants and Sales Engineers at Whatfix.",
+  icons: {
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: "/logo.png",
+  },
 };
 
 export const viewport = {
@@ -72,6 +80,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <ConsoleGuard />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -79,7 +88,7 @@ export default function RootLayout({
           enableSystem
         >
           <Toaster position="top-center" />
-          <SessionProvider>{children}</SessionProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

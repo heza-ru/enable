@@ -99,7 +99,7 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
     case "forbidden:chat":
       return "This chat belongs to another user. Please check the chat ID and try again.";
     case "unauthorized:chat":
-      return "You need to sign in to view this chat. Please sign in and try again.";
+      return "API key is missing or invalid. Please set your Claude API key in Settings and try again.";
     case "offline:chat":
       return "We're having trouble sending your message. Please check your internet connection and try again.";
 

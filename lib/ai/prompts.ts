@@ -41,11 +41,119 @@ export const regularPrompt = `You are a friendly assistant! Keep your responses 
 
 When asked to write, create, or help with something, just do it directly. Don't ask clarifying questions unless absolutely necessary - make reasonable assumptions and proceed with the task.`;
 
+const PERSONA_PROMPTS = {
+  "solution-consultant": `You are Enable, an AI assistant specialized for Solution Consultants at Whatfix.
+
+Your role is to help Solution Consultants:
+- Craft compelling demo narratives and storylines
+- Develop customer-specific value propositions
+- Create presentation decks and slide outlines
+- Write follow-up emails and proposals
+- Handle objections and competitive questions
+- Explain Whatfix features in business terms (not technical jargon)
+- Focus on business outcomes, ROI, and customer success
+
+Always maintain a consultative, business-focused tone. Think like a trusted advisor who understands both the product and the customer's business needs.`,
+
+  "sales-engineer": `You are Enable, an AI assistant specialized for Sales Engineers at Whatfix.
+
+Your role is to help Sales Engineers:
+- Design technical POC plans and scoping documents
+- Create detailed implementation guides and walkthroughs
+- Explain technical architecture and integrations
+- Address security, compliance, and technical objections
+- Develop technical demo scripts
+- Document API usage and configuration steps
+- Troubleshoot technical issues during demos
+
+Balance technical depth with clarity. Provide actionable, implementable guidance while being mindful of demo timelines and customer technical expertise.`,
+
+  generic: `You are Enable, a helpful AI assistant.
+
+Keep your responses clear, concise, and actionable. Help users accomplish their tasks efficiently.`,
+};
+
+export const getPersonaPrompt = (
+  context?: ContextData,
+  userPersonalization?: string | null,
+  userName?: string | null,
+  userRole?: string | null
+): string => {
+  if (!context) {
+    console.log("[Persona] No context provided, using generic");
+    return PERSONA_PROMPTS.generic;
+  }
+
+  console.log("[Persona] Building prompt with:", {
+    persona: context.persona,
+    userName,
+    userRole,
+    hasPersonalization: !!(userPersonalization && userPersonalization.trim()),
+    personalizationLength: userPersonalization?.length || 0,
+    hasCustomer: !!context.customer,
+    hasIndustry: !!context.industry,
+    hasScope: !!context.scope,
+  });
+
+  let prompt = PERSONA_PROMPTS[context.persona];
+
+  // Add user identity context
+  if (userName || userRole) {
+    prompt += "\n\n**About the User:**\n";
+    if (userName) {
+      prompt += `- Name: ${userName}\n`;
+    }
+    if (userRole) {
+      prompt += `- Role: ${userRole}\n`;
+    }
+    prompt +=
+      "\nAddress them by name when appropriate and tailor your assistance to their role.";
+  }
+
+  // Add user personalization (from Settings)
+  if (userPersonalization && userPersonalization.trim()) {
+    console.log(
+      "[Persona] Adding personalization:",
+      userPersonalization.trim()
+    );
+    prompt += `\n\n**User Personalization Preferences:**\n${userPersonalization.trim()}\n\nPlease adapt your responses according to these preferences while maintaining your core role and capabilities.`;
+  } else {
+    console.log("[Persona] No personalization to add");
+  }
+
+  // Add customer context if available
+  if (context.customer || context.industry || context.scope) {
+    prompt += "\n\n**Current Customer Context:**\n";
+
+    if (context.customer) {
+      prompt += `- Customer: ${context.customer}\n`;
+    }
+    if (context.industry) {
+      prompt += `- Industry: ${context.industry}\n`;
+    }
+    if (context.scope) {
+      prompt += `- Scope/Context: ${context.scope}\n`;
+    }
+
+    prompt +=
+      "\nTailor your responses to this specific customer and context. Reference their industry and needs when relevant.";
+  }
+
+  return prompt;
+};
+
 export type RequestHints = {
   latitude: Geo["latitude"];
   longitude: Geo["longitude"];
   city: Geo["city"];
   country: Geo["country"];
+};
+
+export type ContextData = {
+  persona: "solution-consultant" | "sales-engineer" | "generic";
+  customer?: string;
+  industry?: string;
+  scope?: string;
 };
 
 export const getRequestPromptFromHints = (requestHints: RequestHints) => `\
@@ -59,21 +167,41 @@ About the origin of user's request:
 export const systemPrompt = ({
   selectedChatModel,
   requestHints,
+  context,
+  userPersonalization,
+  userName,
+  userRole,
 }: {
   selectedChatModel: string;
   requestHints: RequestHints;
+  context?: ContextData;
+  userPersonalization?: string | null;
+  userName?: string | null;
+  userRole?: string | null;
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
+
+  // Assemble prompt in exact order:
+  // 1. Base/Role prompt
+  // 2. User identity (name/role)
+  // 3. User personalization
+  // 4. Customer context
+  const personaPrompt = getPersonaPrompt(
+    context,
+    userPersonalization,
+    userName,
+    userRole
+  );
 
   // reasoning models don't need artifacts prompt (they can't use tools)
   if (
     selectedChatModel.includes("reasoning") ||
     selectedChatModel.includes("thinking")
   ) {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${personaPrompt}\n\n${requestPrompt}`;
   }
 
-  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+  return `${personaPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
 };
 
 export const codePrompt = `

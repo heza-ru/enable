@@ -1,12 +1,20 @@
 "use client";
 
-import Link from "next/link";
+import { Download, Presentation } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
+import { toast } from "sonner";
 import { useWindowSize } from "usehooks-ts";
 import { SidebarToggle } from "@/components/sidebar-toggle";
+import { TemplateSelector } from "@/components/template-selector";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, VercelIcon } from "./icons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { PlusIcon } from "./icons";
 import { useSidebar } from "./ui/sidebar";
 import { VisibilitySelector, type VisibilityType } from "./visibility-selector";
 
@@ -14,18 +22,28 @@ function PureChatHeader({
   chatId,
   selectedVisibilityType,
   isReadonly,
+  onTemplateSelect,
+  onExportClick,
 }: {
   chatId: string;
   selectedVisibilityType: VisibilityType;
   isReadonly: boolean;
+  onTemplateSelect?: (prompt: string) => void;
+  onExportClick?: () => void;
 }) {
   const router = useRouter();
   const { open } = useSidebar();
-
   const { width: windowWidth } = useWindowSize();
 
+  const handleDemoMode = () => {
+    // Clear current conversation and start fresh
+    router.push("/");
+    router.refresh();
+    toast.success("Demo mode activated - starting fresh conversation");
+  };
+
   return (
-    <header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
+    <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-[#2a2836]/50 bg-background/80 px-2 py-1.5 backdrop-blur-lg transition-all duration-200 md:px-4 md:py-2">
       <SidebarToggle />
 
       {(!open || windowWidth < 768) && (
@@ -43,26 +61,58 @@ function PureChatHeader({
       )}
 
       {!isReadonly && (
-        <VisibilitySelector
-          chatId={chatId}
-          className="order-1 md:order-2"
-          selectedVisibilityType={selectedVisibilityType}
-        />
-      )}
+        <>
+          {onTemplateSelect && (
+            <TemplateSelector onSelectTemplate={onTemplateSelect} />
+          )}
 
-      <Button
-        asChild
-        className="order-3 hidden bg-zinc-900 px-2 text-zinc-50 hover:bg-zinc-800 md:ml-auto md:flex md:h-fit dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
-        <Link
-          href={"https://vercel.com/templates/next.js/nextjs-ai-chatbot"}
-          rel="noreferrer"
-          target="_noblank"
-        >
-          <VercelIcon size={16} />
-          Deploy with Vercel
-        </Link>
-      </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="order-1 md:order-2"
+                  onClick={handleDemoMode}
+                  size="sm"
+                  variant="ghost"
+                >
+                  <Presentation className="size-4" />
+                  <span className="ml-2 hidden md:inline">Demo Mode</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Start fresh conversation (perfect for live demos)</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {onExportClick && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="order-2 md:order-3"
+                    onClick={onExportClick}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <Download className="size-4" />
+                    <span className="ml-2 hidden md:inline">Export</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Export or share this conversation</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
+          <VisibilitySelector
+            chatId={chatId}
+            className="order-3 ml-auto md:order-4"
+            selectedVisibilityType={selectedVisibilityType}
+          />
+        </>
+      )}
     </header>
   );
 }

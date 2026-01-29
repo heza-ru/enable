@@ -10,16 +10,16 @@ import {
   useEffect,
   useState,
 } from "react";
-import useSWR, { useSWRConfig } from "swr";
 import { useDebounceCallback, useWindowSize } from "usehooks-ts";
 import { codeArtifact } from "@/artifacts/code/client";
 import { imageArtifact } from "@/artifacts/image/client";
 import { sheetArtifact } from "@/artifacts/sheet/client";
 import { textArtifact } from "@/artifacts/text/client";
 import { useArtifact } from "@/hooks/use-artifact";
-import type { Document, Vote } from "@/lib/db/schema";
+import type { Vote } from "@/lib/db/schema";
+import { getDocumentsById, saveDocument } from "@/lib/storage/document-store";
+import type { Document } from "@/lib/storage/indexeddb";
 import type { Attachment, ChatMessage } from "@/lib/types";
-import { fetcher } from "@/lib/utils";
 import { ArtifactActions } from "./artifact-actions";
 import { ArtifactCloseButton } from "./artifact-close-button";
 import { ArtifactMessages } from "./artifact-messages";
@@ -89,22 +89,36 @@ function PureArtifact({
 }) {
   const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
 
-  const {
-    data: documents,
-    isLoading: isDocumentsFetching,
-    mutate: mutateDocuments,
-  } = useSWR<Document[]>(
-    artifact.documentId !== "init" && artifact.status !== "streaming"
-      ? `/api/document?id=${artifact.documentId}`
-      : null,
-    fetcher
-  );
-
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [isDocumentsFetching, setIsDocumentsFetching] = useState(false);
   const [mode, setMode] = useState<"edit" | "diff">("edit");
   const [document, setDocument] = useState<Document | null>(null);
   const [currentVersionIndex, setCurrentVersionIndex] = useState(-1);
 
   const { open: isSidebarOpen } = useSidebar();
+
+  // Load documents from IndexedDB instead of API
+  useEffect(() => {
+    const loadDocuments = async () => {
+      if (artifact.documentId === "init" || artifact.status === "streaming") {
+        return;
+      }
+
+      setIsDocumentsFetching(true);
+      try {
+        const docs = await getDocumentsById(artifact.documentId);
+        console.log("[Artifact] Loaded documents from IndexedDB:", docs.length);
+        setDocuments(docs);
+      } catch (error) {
+        console.error("[Artifact] Failed to load documents:", error);
+        setDocuments([]);
+      } finally {
+        setIsDocumentsFetching(false);
+      }
+    };
+
+    loadDocuments();
+  }, [artifact.documentId, artifact.status]);
 
   useEffect(() => {
     if (documents && documents.length > 0) {
@@ -121,59 +135,35 @@ function PureArtifact({
     }
   }, [documents, setArtifact]);
 
-  useEffect(() => {
-    mutateDocuments();
-  }, [mutateDocuments]);
-
-  const { mutate } = useSWRConfig();
   const [isContentDirty, setIsContentDirty] = useState(false);
 
   const handleContentChange = useCallback(
-    (updatedContent: string) => {
-      if (!artifact) {
+    async (updatedContent: string) => {
+      if (!artifact || !artifact.documentId || artifact.documentId === "init") {
         return;
       }
 
-      mutate<Document[]>(
-        `/api/document?id=${artifact.documentId}`,
-        async (currentDocuments) => {
-          if (!currentDocuments) {
-            return [];
-          }
+      try {
+        // Save directly to IndexedDB
+        const savedDoc = await saveDocument({
+          id: artifact.documentId,
+          title: artifact.title,
+          content: updatedContent,
+          kind: artifact.kind,
+          userId: "local-user",
+        });
 
-          const currentDocument = currentDocuments.at(-1);
+        console.log("[Artifact] Document updated in IndexedDB:", savedDoc.id);
 
-          if (!currentDocument || !currentDocument.content) {
-            setIsContentDirty(false);
-            return currentDocuments;
-          }
-
-          if (currentDocument.content !== updatedContent) {
-            await fetch(`/api/document?id=${artifact.documentId}`, {
-              method: "POST",
-              body: JSON.stringify({
-                title: artifact.title,
-                content: updatedContent,
-                kind: artifact.kind,
-              }),
-            });
-
-            setIsContentDirty(false);
-
-            const newDocument = {
-              ...currentDocument,
-              content: updatedContent,
-              createdAt: new Date(),
-            };
-
-            return [...currentDocuments, newDocument];
-          }
-          return currentDocuments;
-        },
-        { revalidate: false }
-      );
+        // Update local state
+        setDocuments([savedDoc]);
+        setDocument(savedDoc);
+        setIsContentDirty(false);
+      } catch (error) {
+        console.error("[Artifact] Failed to save document:", error);
+      }
     },
-    [artifact, mutate]
+    [artifact]
   );
 
   const debouncedHandleContentChange = useDebounceCallback(
@@ -390,7 +380,7 @@ function PureArtifact({
                     },
                   }
             }
-            className="fixed flex h-dvh flex-col overflow-y-scroll border-zinc-200 bg-background md:border-l dark:border-zinc-700 dark:bg-muted"
+            className="fixed flex h-dvh flex-col overflow-y-scroll border-[#2a2836] bg-background md:border-l dark:bg-muted"
             exit={{
               opacity: 0,
               scale: 0.5,
@@ -421,7 +411,7 @@ function PureArtifact({
                   }
             }
           >
-            <div className="flex flex-row items-start justify-between p-2">
+            <div className="flex flex-row items-start justify-between p-2 border-b border-[#2a2836]">
               <div className="flex flex-row items-start gap-4">
                 <ArtifactCloseButton />
 

@@ -1,8 +1,5 @@
-import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-
-import { auth } from "@/app/(auth)/auth";
 
 // Use Blob instead of File since File is not available in Node.js environment
 const FileSchema = z.object({
@@ -18,11 +15,7 @@ const FileSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const session = await auth();
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Enable is client-side only - files stored as data URLs
 
   if (request.body === null) {
     return new Response("Request body is empty", { status: 400 });
@@ -51,15 +44,23 @@ export async function POST(request: Request) {
     const fileBuffer = await file.arrayBuffer();
 
     try {
-      const data = await put(`${filename}`, fileBuffer, {
-        access: "public",
-      });
+      // Convert to base64 data URL for client-side storage
+      const base64 = Buffer.from(fileBuffer).toString("base64");
+      const contentType = file.type;
+      const dataUrl = `data:${contentType};base64,${base64}`;
 
-      return NextResponse.json(data);
-    } catch (_error) {
+      return NextResponse.json({
+        url: dataUrl,
+        pathname: filename,
+        contentType,
+        downloadUrl: dataUrl,
+      });
+    } catch (error) {
+      console.error("Upload processing error:", error);
       return NextResponse.json({ error: "Upload failed" }, { status: 500 });
     }
-  } catch (_error) {
+  } catch (error) {
+    console.error("Request processing error:", error);
     return NextResponse.json(
       { error: "Failed to process request" },
       { status: 500 }

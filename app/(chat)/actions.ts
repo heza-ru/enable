@@ -1,16 +1,7 @@
 "use server";
 
-import { generateText, type UIMessage } from "ai";
 import { cookies } from "next/headers";
 import type { VisibilityType } from "@/components/visibility-selector";
-import { titlePrompt } from "@/lib/ai/prompts";
-import { getTitleModel } from "@/lib/ai/providers";
-import {
-  deleteMessagesByChatIdAfterTimestamp,
-  getMessageById,
-  updateChatVisibilityById,
-} from "@/lib/db/queries";
-import { getTextFromMessage } from "@/lib/utils";
 
 export async function saveChatModelAsCookie(model: string) {
   const cookieStore = await cookies();
@@ -18,36 +9,24 @@ export async function saveChatModelAsCookie(model: string) {
 }
 
 export async function generateTitleFromUserMessage({
-  message,
+  message: _message,
 }: {
-  message: UIMessage;
+  message: unknown;
 }) {
-  const { text } = await generateText({
-    model: getTitleModel(),
-    system: titlePrompt,
-    prompt: getTextFromMessage(message),
-  });
-  return text
-    .replace(/^[#*"\s]+/, "")
-    .replace(/["]+$/, "")
-    .trim();
+  // Enable is client-side only - title generation handled in browser
+  return "New chat";
 }
 
-export async function deleteTrailingMessages({ id }: { id: string }) {
-  const [message] = await getMessageById({ id });
-
-  await deleteMessagesByChatIdAfterTimestamp({
-    chatId: message.chatId,
-    timestamp: message.createdAt,
-  });
+export async function deleteTrailingMessages({ id: _id }: { id: string }) {
+  // Enable is client-side only - deletions handled in IndexedDB
 }
 
 export async function updateChatVisibility({
-  chatId,
-  visibility,
+  chatId: _chatId,
+  visibility: _visibility,
 }: {
   chatId: string;
   visibility: VisibilityType;
 }) {
-  await updateChatVisibilityById({ chatId, visibility });
+  // Enable is client-side only - visibility handled in IndexedDB
 }

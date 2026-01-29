@@ -27,6 +27,13 @@ const messageSchema = z.object({
   parts: z.array(z.any()),
 });
 
+const contextSchema = z.object({
+  persona: z.enum(["solution-consultant", "sales-engineer", "generic"]),
+  customer: z.string().optional(),
+  industry: z.string().optional(),
+  scope: z.string().optional(),
+});
+
 export const postRequestBodySchema = z.object({
   id: z.string().uuid(),
   // Either a single new message or all messages (for tool approvals)
@@ -34,6 +41,10 @@ export const postRequestBodySchema = z.object({
   messages: z.array(messageSchema).optional(),
   selectedChatModel: z.string(),
   selectedVisibilityType: z.enum(["public", "private"]),
+  context: contextSchema.optional(),
+  userPersonalization: z.string().nullable().optional(),
+  userName: z.string().nullable().optional(),
+  userRole: z.string().nullable().optional(),
 });
 
 export type PostRequestBody = z.infer<typeof postRequestBodySchema>;

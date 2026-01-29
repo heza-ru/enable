@@ -1,17 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSWRConfig } from "swr";
-import { unstable_serialize } from "swr/infinite";
 import { initialArtifactData, useArtifact } from "@/hooks/use-artifact";
+import { saveDocument } from "@/lib/storage/document-store";
 import { artifactDefinitions } from "./artifact";
 import { useDataStream } from "./data-stream-provider";
-import { getChatHistoryPaginationKey } from "./sidebar-history";
 
 export function DataStreamHandler() {
   const { dataStream, setDataStream } = useDataStream();
-  const { mutate } = useSWRConfig();
-
   const { artifact, setArtifact, setMetadata } = useArtifact();
 
   useEffect(() => {
@@ -23,9 +19,8 @@ export function DataStreamHandler() {
     setDataStream([]);
 
     for (const delta of newDeltas) {
-      // Handle chat title updates
+      // Handle chat title updates (Enable: handled client-side)
       if (delta.type === "data-chat-title") {
-        mutate(unstable_serialize(getChatHistoryPaginationKey));
         continue;
       }
       const artifactDefinition = artifactDefinitions.find(
@@ -76,6 +71,28 @@ export function DataStreamHandler() {
             };
 
           case "data-finish":
+            // Save document to IndexedDB when streaming finishes
+            if (
+              draftArtifact.documentId &&
+              draftArtifact.documentId !== "init"
+            ) {
+              saveDocument({
+                id: draftArtifact.documentId,
+                title: draftArtifact.title,
+                content: draftArtifact.content,
+                kind: draftArtifact.kind,
+                userId: "local-user",
+              })
+                .then(() => {
+                  console.log(
+                    "[Document] Saved to IndexedDB:",
+                    draftArtifact.documentId
+                  );
+                })
+                .catch((error) => {
+                  console.error("[Document] Failed to save:", error);
+                });
+            }
             return {
               ...draftArtifact,
               status: "idle",
@@ -86,7 +103,7 @@ export function DataStreamHandler() {
         }
       });
     }
-  }, [dataStream, setArtifact, setMetadata, artifact, setDataStream, mutate]);
+  }, [dataStream, setArtifact, setMetadata, artifact, setDataStream]);
 
   return null;
 }

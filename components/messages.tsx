@@ -18,6 +18,7 @@ type MessagesProps = {
   isReadonly: boolean;
   isArtifactVisible: boolean;
   selectedModelId: string;
+  onSuggestionClick?: (suggestion: string) => void;
 };
 
 function PureMessages({
@@ -30,6 +31,7 @@ function PureMessages({
   regenerate,
   isReadonly,
   selectedModelId: _selectedModelId,
+  onSuggestionClick,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -46,11 +48,13 @@ function PureMessages({
   return (
     <div className="relative flex-1">
       <div
-        className="absolute inset-0 touch-pan-y overflow-y-auto"
+        className="absolute inset-0 touch-pan-y overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border"
         ref={messagesContainerRef}
       >
-        <div className="mx-auto flex min-w-0 max-w-4xl flex-col gap-4 px-2 py-4 md:gap-6 md:px-4">
-          {messages.length === 0 && <Greeting />}
+        <div className="mx-auto flex min-w-0 max-w-full flex-col gap-3 px-2 py-4 sm:max-w-3xl sm:gap-4 sm:px-4 md:gap-6 md:px-6 lg:max-w-4xl xl:max-w-5xl">
+          {messages.length === 0 && (
+            <Greeting onSuggestionClick={onSuggestionClick} />
+          )}
 
           {messages.map((message, index) => (
             <PreviewMessage
