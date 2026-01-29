@@ -3,16 +3,15 @@
 import {
   Key,
   MessageSquare,
+  Palette,
   RotateCcw,
   Settings,
   Sparkles,
   Trash2,
   User,
-  Palette,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { clearApiKey } from "@/lib/storage/api-keys";
 import { deleteAllChats } from "@/lib/storage/chat-store";
 import {
@@ -21,7 +20,14 @@ import {
   type UserRole,
   updateUserProfile,
 } from "@/lib/storage/user-profile";
-import { themes, type ThemeName, applyTheme, getStoredTheme, saveTheme } from "@/lib/themes";
+import {
+  applyTheme,
+  getStoredTheme,
+  saveTheme,
+  type ThemeName,
+  themes,
+} from "@/lib/themes";
+import { toast } from "./toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,9 +95,15 @@ export function SettingsDialog({
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showClearHistoryConfirm, setShowClearHistoryConfirm] = useState(false);
   const [showClearApiKeyConfirm, setShowClearApiKeyConfirm] = useState(false);
-  
-  const { theme: nextTheme, setTheme: setNextTheme } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState<ThemeName>(getStoredTheme());
+
+  const {
+    theme: nextTheme,
+    resolvedTheme,
+    setTheme: setNextTheme,
+  } = useTheme();
+  const [selectedTheme, setSelectedTheme] = useState<ThemeName>(
+    getStoredTheme()
+  );
 
   // Reload profile when dialog opens
   useEffect(() => {
@@ -104,21 +116,24 @@ export function SettingsDialog({
       setSelectedTheme(getStoredTheme());
     }
   }, [open]);
-  
+
   const handleThemeChange = (themeName: ThemeName) => {
     setSelectedTheme(themeName);
     saveTheme(themeName);
-    
-    // Apply theme colors based on current mode
-    const mode = nextTheme === "dark" || nextTheme === "system" ? "dark" : "light";
+
+    // Apply theme colors based on resolved mode (handles system preference)
+    const mode = resolvedTheme === "dark" ? "dark" : "light";
     applyTheme(themeName, mode);
-    
-    toast.success(`${themes[themeName].name} theme applied`);
+
+    toast({
+      type: "success",
+      description: `${themes[themeName].name} theme applied`,
+    });
   };
 
   const handleSave = () => {
     if (!name.trim()) {
-      toast.error("Name cannot be empty");
+      toast({ type: "error", description: "Name cannot be empty" });
       return;
     }
 
@@ -129,21 +144,24 @@ export function SettingsDialog({
         personalizationPrompt: personalizationPrompt.trim(),
       });
 
-      toast.success("Settings saved successfully");
+      toast({ type: "success", description: "Settings saved successfully" });
       handleOpenChange(false);
 
       // Reload page to apply changes
       window.location.reload();
     } catch (error) {
       console.error("Failed to save settings:", error);
-      toast.error("Failed to save settings");
+      toast({ type: "error", description: "Failed to save settings" });
     }
   };
 
   const handleResetOnboarding = () => {
     try {
       clearUserProfile();
-      toast.success("Onboarding reset. Reload to start fresh.");
+      toast({
+        type: "success",
+        description: "Onboarding reset. Reload to start fresh.",
+      });
       setShowResetConfirm(false);
       handleOpenChange(false);
 
@@ -154,32 +172,32 @@ export function SettingsDialog({
       }
     } catch (error) {
       console.error("Failed to reset onboarding:", error);
-      toast.error("Failed to reset onboarding");
+      toast({ type: "error", description: "Failed to reset onboarding" });
     }
   };
 
   const handleClearHistory = async () => {
     try {
       await deleteAllChats();
-      toast.success("Chat history cleared");
+      toast({ type: "success", description: "Chat history cleared" });
       setShowClearHistoryConfirm(false);
 
       // Redirect to home and refresh to update sidebar
       window.location.href = "/";
     } catch (error) {
       console.error("Failed to clear history:", error);
-      toast.error("Failed to clear chat history");
+      toast({ type: "error", description: "Failed to clear chat history" });
     }
   };
 
   const handleClearApiKey = () => {
     try {
       clearApiKey();
-      toast.success("API key cleared");
+      toast({ type: "success", description: "API key cleared" });
       setShowClearApiKeyConfirm(false);
     } catch (error) {
       console.error("Failed to clear API key:", error);
-      toast.error("Failed to clear API key");
+      toast({ type: "error", description: "Failed to clear API key" });
     }
   };
 
@@ -193,7 +211,7 @@ export function SettingsDialog({
             </Button>
           </DialogTrigger>
         )}
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px] bg-card dark:bg-background">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="size-5" />
@@ -269,17 +287,17 @@ export function SettingsDialog({
                         type="button"
                       >
                         <div className="flex w-full gap-1">
-                          <div 
+                          <div
                             className="h-6 flex-1 rounded"
-                            style={{ 
-                              background: `hsl(${theme.colors.dark.primary})` 
-                            }} 
+                            style={{
+                              background: `hsl(${theme.colors.dark.primary})`,
+                            }}
                           />
-                          <div 
+                          <div
                             className="h-6 flex-1 rounded"
-                            style={{ 
-                              background: `hsl(${theme.colors.dark.accent})` 
-                            }} 
+                            style={{
+                              background: `hsl(${theme.colors.dark.accent})`,
+                            }}
                           />
                         </div>
                         <span className="text-center text-xs font-medium">
@@ -306,7 +324,8 @@ export function SettingsDialog({
                     ))}
                   </div>
                   <p className="text-muted-foreground text-xs">
-                    Choose a color theme for the interface. Themes adapt to light/dark mode.
+                    Choose a color theme for the interface. Themes adapt to
+                    light/dark mode.
                   </p>
                 </div>
               </div>
