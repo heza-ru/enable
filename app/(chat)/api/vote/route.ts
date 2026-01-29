@@ -14,9 +14,12 @@ export async function GET(request: Request) {
   }
 
   const session = await auth();
-
+  // Enable is client-first and may run without authentication in many setups.
+  // If no session is present, return an empty vote list instead of 401 so
+  // the client can continue rendering without spamming the console with
+  // unauthorized errors.
   if (!session?.user) {
-    return new ChatSDKError("unauthorized:vote").toResponse();
+    return Response.json([], { status: 200 });
   }
 
   const chat = await getChatById({ id: chatId });
@@ -51,8 +54,11 @@ export async function PATCH(request: Request) {
 
   const session = await auth();
 
+  // If running in client-only mode (no auth), accept the request as a no-op
+  // so the client won't receive a 401. Voting persistence requires backend
+  // session hooks; in client-only deployments votes are ignored.
   if (!session?.user) {
-    return new ChatSDKError("unauthorized:vote").toResponse();
+    return new Response("No-op in client-only mode", { status: 200 });
   }
 
   const chat = await getChatById({ id: chatId });
