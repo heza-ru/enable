@@ -57,6 +57,12 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
     setShowOnboarding(true);
   };
 
+  const handleAuthSkip = () => {
+    setGoogleUser(null);
+    setShowAuth(false);
+    setShowOnboarding(true);
+  };
+
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
   };
@@ -69,7 +75,11 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
   return (
     <>
       {showAuth && (
-        <GoogleAuth onAuthSuccess={handleAuthSuccess} open={showAuth} />
+        <GoogleAuth 
+          onAuthSuccess={handleAuthSuccess}
+          onSkip={handleAuthSkip}
+          open={showAuth}
+        />
       )}
       {showOnboarding && (
         <OnboardingDialog

@@ -47,6 +47,7 @@ export interface GoogleUser {
 
 interface GoogleAuthProps {
   onAuthSuccess: (user: GoogleUser) => void;
+  onSkip?: () => void;
   open: boolean;
 }
 
@@ -97,7 +98,7 @@ declare global {
   }
 }
 
-export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
+export function GoogleAuth({ onAuthSuccess, onSkip, open }: GoogleAuthProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -197,7 +198,9 @@ export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
             Welcome
           </DialogTitle>
           <DialogDescription className="text-center text-base">
-            Sign in with your Google account to get started
+            {onSkip 
+              ? "Sign in with Google for a personalized experience, or continue as a guest"
+              : "Sign in with your Google account to get started"}
           </DialogDescription>
         </DialogHeader>
 
@@ -235,6 +238,19 @@ export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
                   </>
                 )}
               </Button>
+              
+              {/* Skip button */}
+              {onSkip && (
+                <Button
+                  className="w-full max-w-sm"
+                  disabled={isLoading}
+                  onClick={onSkip}
+                  type="button"
+                  variant="ghost"
+                >
+                  Continue as Guest
+                </Button>
+              )}
             </>
           )}
         </div>
