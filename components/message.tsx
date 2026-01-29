@@ -48,29 +48,11 @@ const PurePreviewMessage = ({
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
 
-  const attachmentsFromMessage = message.parts?.filter(
+  const attachmentsFromMessage = message.parts.filter(
     (part) => part.type === "file"
-  ) || [];
-
-  console.log("[Message] Rendering message:", {
-    messageId: message.id,
-    role: message.role,
-    parts: message.parts,
-    partsCount: message.parts?.length,
-    hasParts: !!message.parts,
-  });
+  );
 
   useDataStream();
-  
-  // Safety check: if no parts array, try to create one from legacy content field
-  const messageParts = message.parts || [];
-  if (messageParts.length === 0 && (message as any).content) {
-    console.log("[Message] No parts found, using legacy content field");
-    messageParts.push({
-      type: "text",
-      text: (message as any).content,
-    } as any);
-  }
 
   return (
     <div
@@ -121,7 +103,7 @@ const PurePreviewMessage = ({
             </div>
           )}
 
-          {messageParts.map((part, index) => {
+          {message.parts?.map((part, index) => {
             const { type } = part;
             const key = `message-${message.id}-part-${index}`;
 
@@ -163,25 +145,8 @@ const PurePreviewMessage = ({
                 const looksLikeEmail = (s: string) => {
                   if (!s) return false;
                   const hasHeaders = /(From:|To:|Subject:)/i.test(s);
-                  // also check for typical email separators
                   return hasHeaders;
                 };
-
-                console.log("[Message Debug] Text part:", {
-                  role: message.role,
-                  textContent,
-                  textLength: textContent?.length,
-                  part,
-                  partType: type,
-                  isStreamingPart,
-                  looksLikeMarkdown: looksLikeMarkdown(textContent),
-                });
-                
-                // Skip rendering if text is empty or just whitespace (unless streaming)
-                if (!isStreamingPart && (!textContent || !textContent.trim())) {
-                  console.log("[Message Debug] Skipping empty text part");
-                  return null;
-                }
 
                 return (
                   <div key={key}>
