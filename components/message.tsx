@@ -87,6 +87,10 @@ const PurePreviewMessage = ({
               mode === "edit",
             "max-w-[calc(100%-2.5rem)] sm:max-w-[min(fit-content,80%)]":
               message.role === "user" && mode !== "edit",
+            // Add explicit role classes so nested `MessageContent` styles
+            // (which use group-[.is-user]/group-[.is-assistant]) apply.
+            "is-user": message.role === "user",
+            "is-assistant": message.role === "assistant",
           })}
         >
           {attachmentsFromMessage.length > 0 && (
