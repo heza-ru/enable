@@ -3,6 +3,7 @@
 import type { ComponentProps } from "react";
 import { Streamdown } from "streamdown";
 import { cn } from "@/lib/utils";
+import { createCodeRenderer } from "@/components/enhanced-code-block";
 
 type ResponseProps = ComponentProps<typeof Streamdown>;
 
@@ -13,6 +14,7 @@ export function Response({ className, children, ...props }: ResponseProps) {
         "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_code]:whitespace-pre-wrap [&_code]:break-words [&_pre]:max-w-full [&_pre]:overflow-x-auto",
         className
       )}
+      components={createCodeRenderer()}
       {...props}
     >
       {children}

@@ -127,12 +127,22 @@ const PurePreviewMessage = ({
             if (type === "text") {
               if (mode === "view") {
                 const textContent = sanitizeText(part.text);
+                const isStreamingPart =
+                  typeof part === "object" && "state" in part &&
+                  (part as any).state === "streaming";
+
+                const looksLikeMarkdown = (s: string) =>
+                  /(^#{1,6}\s)|(```)|(`[^`])|(\*\*)|(\[.+\]\(.+\))|(!\[)/m.test(s);
+
                 console.log("[Message Debug] Text part:", {
                   role: message.role,
                   textContent,
                   partText: part.text,
                   partType: type,
+                  isStreamingPart,
+                  looksLikeMarkdown: looksLikeMarkdown(textContent),
                 });
+
                 return (
                   <div key={key}>
                     <MessageContent
@@ -149,9 +159,13 @@ const PurePreviewMessage = ({
                           : undefined
                       }
                     >
-                      <div data-testid="message-text" className="whitespace-pre-wrap">
-                        {textContent}
-                      </div>
+                      {isStreamingPart || looksLikeMarkdown(textContent) ? (
+                        <Response>{textContent}</Response>
+                      ) : (
+                        <div data-testid="message-text" className="whitespace-pre-wrap">
+                          {textContent}
+                        </div>
+                      )}
                     </MessageContent>
                   </div>
                 );
