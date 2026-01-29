@@ -1211,3 +1211,22 @@ export const WarningIcon = ({ size = 16 }: { size?: number }) => {
     </svg>
   );
 };
+
+export const PresentationIcon = ({ size = 16 }: { size?: number }) => {
+  return (
+    <svg
+      height={size}
+      strokeLinejoin="round"
+      style={{ color: "currentcolor" }}
+      viewBox="0 0 16 16"
+      width={size}
+    >
+      <path
+        clipRule="evenodd"
+        d="M1 1H1.75H14.25H15V2.5H14.25V9H14.75V10.5H9.75V12.4393L11.7197 14.409L12.25 14.9393L11.1893 16L10.659 15.4697L8 12.8107L5.34099 15.4697L4.81066 16L3.75 14.9393L4.28033 14.409L6.25 12.4393V10.5H1.25V9H1.75V2.5H1V1ZM12.75 2.5H3.25V9H12.75V2.5Z"
+        fill="currentColor"
+        fillRule="evenodd"
+      />
+    </svg>
+  );
+};

@@ -1,0 +1,1082 @@
+[
+  {
+    "slide_number": 1,
+    "title": "Design Presentation Whatfix",
+    "content": [],
+    "bullets": [],
+    "notes": "The icons and Whatfix logos are available at the link below.\nhttps://docs.google.com/drawings/d/1LmM_A75c9hoNpjcjAP3GdHU8fHEdO3p1mrUqLU3OqZM/copy",
+    "layout_type": "title_only",
+    "has_image": false
+  },
+  {
+    "slide_number": 2,
+    "title": "Lorem Ipsum\nPitch deck",
+    "content": [
+      "Subtitle",
+      "Subtitle",
+      "Subtitle"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 3,
+    "title": "Lorem Ipsum\nPitch deck",
+    "content": [
+      "Subtitle"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 4,
+    "title": "“",
+    "content": [
+      "“Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do”",
+      "Lorem Ipsum",
+      "Company"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 5,
+    "title": "",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 6,
+    "title": "Khadim\u000bBatti",
+    "content": [
+      "Vara",
+      "Kumar",
+      "COO-Whatfix",
+      "CEO-Whatfix"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 7,
+    "title": "",
+    "content": [
+      "Vara Kumar",
+      "Khadim Batti"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 8,
+    "title": "",
+    "content": [
+      "Panel Discussion:"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 9,
+    "title": "",
+    "content": [
+      "Agenda",
+      "Session 1",
+      "8:00 AM",
+      "Session 2",
+      "9:00 AM",
+      "Session 3",
+      "10:00 AM",
+      "Session 4",
+      "11:00 AM",
+      "Session 5",
+      "12:00 NOON",
+      "Session 6",
+      "1:00 PM",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "Session 7",
+      "2:00 PM",
+      "Session 8",
+      "3:00 PM",
+      "Session 9",
+      "4:00 PM",
+      "Session 10",
+      "5:00 PM",
+      "Session 11",
+      "6:00 PM",
+      "Session 12",
+      "7:00 PM",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 10,
+    "title": "",
+    "content": [
+      "Agenda",
+      "Session 1",
+      "8:00 AM",
+      "Session 2",
+      "9:00 AM",
+      "Session 3",
+      "10:00 AM",
+      "Session 4",
+      "11:00 AM",
+      "Session 5",
+      "12:00 NOON",
+      "Session 6",
+      "1:00 PM",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 11,
+    "title": "",
+    "content": [
+      "Event Name",
+      "Date: \u000bTime:",
+      "Location:"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 12,
+    "title": "",
+    "content": [
+      "How AI Makes Simulation- based Roleplay and Scenario Training Smarter",
+      "AI uses institutional data and training content to build relevant, realistic learning environments. By reflecting actual challenges, processes, and customer interactions, these simulations keep learners engaged and ensure that skills transfer directly to the job.",
+      "Creates Contextual Scenarios from Organizational Knowledge",
+      "By embedding AI-driven assessments, simulations can evaluate learner performance, confidence, and readiness levels. These insights help managers and L&D teams identify strengths, close skill gaps, and track overall competency growth.",
+      "Measures Readiness",
+      "and Skill Proficiency",
+      "AI collects behavioral and performance data from every session, helping L&D teams refine training content and focus on the most impactful skills. This continuous feedback loop ensures learning programs stay relevant and aligned with evolving team needs.",
+      "Captures Data to Improve Future Training",
+      "AI continuously analyzes how learners interact with scenarios and adjusts them accordingly—altering difficulty, pacing, or branching options. This keeps learners in the optimal challenge zone, reinforcing areas that need practice and encouraging deeper skill development.",
+      "Adapts to Each Learner",
+      "in Real Time"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 13,
+    "title": "",
+    "content": [
+      "How AI Makes Simulation- based Roleplay and Scenario Training Smarter",
+      "AI uses institutional data and training content to build relevant, realistic learning environments. By reflecting actual challenges, processes, and customer interactions, these simulations keep learners engaged and ensure that skills transfer directly to the job.",
+      "Creates Contextual Scenarios from Organizational Knowledge",
+      "By embedding AI-driven assessments, simulations can evaluate learner performance, confidence, and readiness levels. These insights help managers and L&D teams identify strengths, close skill gaps, and track overall competency growth.",
+      "Measures Readiness",
+      "and Skill Proficiency",
+      "AI collects behavioral and performance data from every session, helping L&D teams refine training content and focus on the most impactful skills. This continuous feedback loop ensures learning programs stay relevant and aligned with evolving team needs.",
+      "Captures Data to Improve Future Training",
+      "AI continuously analyzes how learners interact with scenarios and adjusts them accordingly—altering difficulty, pacing, or branching options. This keeps learners in the optimal challenge zone, reinforcing areas that need practice and encouraging deeper skill development.",
+      "Adapts to Each Learner",
+      "in Real Time"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 14,
+    "title": "Lorem\nIpsum",
+    "content": [
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Lorem ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Lorem ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Lorem ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Lorem ipsum"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 15,
+    "title": "",
+    "content": [
+      "Lorem ipsum",
+      "Lorem ipsum",
+      "Lorem ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "Lorem ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "Lorem ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "Lorem ipsum"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 16,
+    "title": "",
+    "content": [
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "Agenda",
+      "Session 1",
+      "10 AM - 11 AM",
+      "Session 1",
+      "10 AM - 11 AM",
+      "Session 1",
+      "10 AM - 11 AM"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 17,
+    "title": "45%",
+    "content": [
+      "Founded in 2014, Whatfix is advancing the \"userization\" of application technology with its AI-first platform, empowering companies to maximize the ROI of digital investments across the application lifecycle. Powered by AI, Whatfix’s product suite includes a Digital Adoption Platform (DAP), simulated application environments for hands-on training, and no-code analytics for applications and enterprises.",
+      "Numbers",
+      "Reduction in",
+      "support queries",
+      "84%",
+      "Reduction in training",
+      "content creation cost",
+      "3x",
+      "Faster time to proficiency for a",
+      "new employee",
+      "10+",
+      "Years Global",
+      "leader in DAP"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 18,
+    "title": "",
+    "content": [
+      "Cause- Effect",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 19,
+    "title": "",
+    "content": [
+      "Objective",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore",
+      "Lorem Ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore",
+      "Lorem Ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,",
+      "Lorem Ipsum"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 20,
+    "title": "",
+    "content": [
+      "Key Benefits of Scenario-Based Learning:",
+      "Competency assessment",
+      "Helps identify and develop real-time decision-making",
+      "and problem-solving skills.",
+      "1.",
+      "2.",
+      "3.",
+      "Builds user confidence",
+      "Hands-on training in a",
+      "risk-free setting accelerates time-to-proficiency and",
+      "builds user confidence.",
+      "Higher engagement",
+      "Encourages experimentation, improving retention and",
+      "completion rates."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 21,
+    "title": "",
+    "content": [
+      "Recognition",
+      "Recognized as the Only Customer Choice in 2024 Gartner® Voice of the Customer Report for DAP",
+      "Explore more >",
+      "“From the beginning, the Whatfix team has been responsive and easy to work with, Resource savings worth about $950,000 can be used now for profit-generating activities from the couple of different deployments that we have done with Whatfix.”",
+      "Amy Boldt",
+      "Learning Leader-Sentry",
+      "Awards & Recognition"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 22,
+    "title": "Event Name",
+    "content": [
+      "Date | Time | Location"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 23,
+    "title": "",
+    "content": [
+      "Whatfix AI empowering you to deliver business outcomes faster"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 24,
+    "title": "",
+    "content": [
+      "Product Suite Graphic Light mode"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 25,
+    "title": "",
+    "content": [
+      "Whatfix AI empowering you to deliver business outcomes faster"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 26,
+    "title": "",
+    "content": [
+      "Product Suite Graphic Dark mode"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 27,
+    "title": "",
+    "content": [
+      "Whatfix AI empowering you to deliver business outcomes faster",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 28,
+    "title": "",
+    "content": [
+      "Objective",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,",
+      "Lorem Ipsum"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 29,
+    "title": "",
+    "content": [
+      "Objective",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,",
+      "Lorem Ipsum",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,",
+      "Lorem Ipsum"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 30,
+    "title": "Lorem Ipsum",
+    "content": [
+      "Powered by Whatfix",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 31,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 32,
+    "title": "",
+    "content": [
+      "QuickRead + Smart Tips"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 33,
+    "title": "",
+    "content": [
+      "AI agent acting as a customer to train agents & adjusters",
+      "Agents, adjusters go through troubling scenarios with customers during the calls. Simulation systems are not realistic today & results in poor preparation.",
+      "Problem",
+      "Agents, adjusters are ready to face customers confidently as they have practiced in near real life scenario. Both application & call are simulated.",
+      "Solution"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 34,
+    "title": "",
+    "content": [
+      "AI agent performing operations on behalf of the users"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 35,
+    "title": "",
+    "content": [
+      "Desktop/Laptop",
+      "You can replace the image on the screen with your own work"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 36,
+    "title": "",
+    "content": [
+      "Mobile/Tablet",
+      "You can replace the image on the screen with your own work"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 37,
+    "title": "Speakers",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_only",
+    "has_image": false
+  },
+  {
+    "slide_number": 38,
+    "title": "New slides",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_only",
+    "has_image": false
+  },
+  {
+    "slide_number": 39,
+    "title": "",
+    "content": [
+      "2020"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 40,
+    "title": "",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 41,
+    "title": "",
+    "content": [
+      "Agenda",
+      "Session 1",
+      "8:00 AM",
+      "Session 2",
+      "9:00 AM",
+      "Session 3",
+      "10:00 AM",
+      "Session 4",
+      "11:00 AM",
+      "Session 5",
+      "12:00 NOON",
+      "Session 6",
+      "1:00 PM",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t",
+      "\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, t"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 42,
+    "title": "",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 43,
+    "title": "",
+    "content": [
+      "Cause and Effect Analysis"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 44,
+    "title": "Speaker name",
+    "content": [
+      "Meet",
+      "Speaker name",
+      "Session name"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 45,
+    "title": "",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 46,
+    "title": "Lorem Ipsum",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_only",
+    "has_image": false
+  },
+  {
+    "slide_number": 47,
+    "title": "",
+    "content": [
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "unknown",
+    "has_image": false
+  },
+  {
+    "slide_number": 48,
+    "title": "",
+    "content": [
+      "AI agent bringing guidelines at the finger tip"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 49,
+    "title": "",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 50,
+    "title": "",
+    "content": [
+      "AI agent performing operations on behalf of the",
+      "users"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 51,
+    "title": "",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 52,
+    "title": "",
+    "content": [
+      "AI agent acting as a customer to train agents & adjusters"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 53,
+    "title": "",
+    "content": [
+      "["
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 54,
+    "title": "Thank you!",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_only",
+    "has_image": false
+  },
+  {
+    "slide_number": 55,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 56,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 57,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 58,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 59,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 60,
+    "title": "",
+    "content": [
+      "Seek [AI Assist]"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 61,
+    "title": "",
+    "content": [
+      "[",
+      "Mirror + AI Roleplay"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 62,
+    "title": "",
+    "content": [
+      "Mirror + AI Roleplay"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 63,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 64,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 65,
+    "title": "AI agents that \u000bDuck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": false
+  },
+  {
+    "slide_number": 66,
+    "title": "AI agents that Duck Creek can take to market",
+    "content": [
+      "Powered by Whatfix",
+      "Our Duck Creek instance is not in good condition so we used an alternate application for demo."
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_and_content",
+    "has_image": true
+  },
+  {
+    "slide_number": 67,
+    "title": "",
+    "content": [
+      "AI agent bringing guidelines at the finger tip",
+      "Every insurer spends a lot of effort to define products, underwriting guidelines & claim handling guidelines. The guidelines are refreshed constantly. Users often miss the guidelines resulting in costly underwriting & claim mistakes.",
+      "Problem",
+      "AI to read the guidelines & serve those in the workflow of user.",
+      "Solution"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 68,
+    "title": "",
+    "content": [
+      "QuickRead + Smart Tips"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 69,
+    "title": "",
+    "content": [
+      "AI agent performing operations on behalf of the users",
+      "Underwriting, policy management & claim processes takes lot of manual effort especially on commercial side.",
+      "Problem",
+      "Agents, underwriters, adjusters achieving higher level of efficiency by AI agent performing on behalf of the users.",
+      "Solution"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 70,
+    "title": "",
+    "content": [
+      "Seek [AI Assist]"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 71,
+    "title": "",
+    "content": [
+      "AI agent acting as a customer to train agents & adjusters",
+      "Agents, adjusters go through troubling scenarios with customers during the calls. Simulation systems are not realistic today & results in poor preparation.",
+      "Problem",
+      "Agents, adjusters are ready to face customers confidently as they have practiced in near real life scenario. Both application & call are simulated.",
+      "Solution"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 72,
+    "title": "",
+    "content": [
+      "Mirror + AI Roleplay"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 73,
+    "title": "Thank you!",
+    "content": [],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "title_only",
+    "has_image": false
+  },
+  {
+    "slide_number": 74,
+    "title": "",
+    "content": [
+      "[",
+      "QuickRead + Smart Tips"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 75,
+    "title": "",
+    "content": [
+      "QuickRead + Smart Tips"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 76,
+    "title": "",
+    "content": [
+      "Seek [AI Assist]"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 77,
+    "title": "",
+    "content": [
+      "Mirror + AI Roleplay"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 78,
+    "title": "",
+    "content": [
+      "AI agent acting as a customer to train agents & adjusters"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 79,
+    "title": "",
+    "content": [
+      "[",
+      "QuickRead + Smart Tips"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 80,
+    "title": "",
+    "content": [
+      "AI agent bringing guidelines at the finger tip"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  },
+  {
+    "slide_number": 81,
+    "title": "",
+    "content": [
+      "AI agent performing operations on behalf of the users"
+    ],
+    "bullets": [],
+    "notes": "",
+    "layout_type": "image_slide",
+    "has_image": true
+  }
+]
