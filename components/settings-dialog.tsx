@@ -12,7 +12,13 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { clearApiKey } from "@/lib/storage/api-keys";
+import {
+  clearApiKey,
+  hasApiKey,
+  isValidApiKeyFormat,
+  storeApiKey,
+} from "@/lib/storage/api-keys";
+import { validateClaudeApiKey } from "@/lib/storage/validate-api-key";
 import { deleteAllChats } from "@/lib/storage/chat-store";
 import {
   clearUserProfile,
@@ -95,6 +101,17 @@ export function SettingsDialog({
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showClearHistoryConfirm, setShowClearHistoryConfirm] = useState(false);
   const [showClearApiKeyConfirm, setShowClearApiKeyConfirm] = useState(false);
+  const [apiKeyPresent, setApiKeyPresent] = useState<boolean>(
+    typeof window !== "undefined" ? hasApiKey() : false
+  );
+
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [storageModeInput, setStorageModeInput] = useState<"memory" | "encrypted">(
+    "encrypted"
+  );
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [isApiKeyLoading, setIsApiKeyLoading] = useState(false);
+  const [apiKeyValidationMessage, setApiKeyValidationMessage] = useState("");
 
   const {
     theme: nextTheme,
@@ -114,6 +131,7 @@ export function SettingsDialog({
       setRole(currentProfile?.role || "Solution Consultant");
       setPersonalizationPrompt(currentProfile?.personalizationPrompt || "");
       setSelectedTheme(getStoredTheme());
+      setApiKeyPresent(hasApiKey());
     }
   }, [open]);
 
@@ -195,6 +213,7 @@ export function SettingsDialog({
       clearApiKey();
       toast({ type: "success", description: "API key cleared" });
       setShowClearApiKeyConfirm(false);
+      setApiKeyPresent(false);
     } catch (error) {
       console.error("Failed to clear API key:", error);
       toast({ type: "error", description: "Failed to clear API key" });
@@ -389,21 +408,83 @@ export function SettingsDialog({
 
                 <div className="flex items-center justify-between rounded-lg border p-3">
                   <div className="flex items-center gap-3">
-                    <Key className="size-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium text-sm">Clear API Key</p>
-                      <p className="text-muted-foreground text-xs">
-                        Remove stored Claude API key
-                      </p>
+                      <Key className="size-4 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium text-sm">API Key</p>
+                        <p className="text-muted-foreground text-xs">
+                          Store or remove your Claude API key (stored locally)
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <Button
-                    onClick={() => setShowClearApiKeyConfirm(true)}
-                    size="sm"
-                    variant="outline"
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+                    <div className="flex items-center gap-2">
+                      {apiKeyPresent ? (
+                        <>
+                          <span className="text-sm text-muted-foreground">
+                            Stored
+                          </span>
+                          <Button
+                            onClick={() => setShowClearApiKeyConfirm(true)}
+                            size="sm"
+                            variant="outline"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            className="w-[280px]"
+                            placeholder="sk-ant-..."
+                            type={showApiKey ? "text" : "password"}
+                            value={apiKeyInput}
+                            onChange={(e) => {
+                              setApiKeyInput(e.target.value);
+                              setApiKeyValidationMessage("");
+                            }}
+                          />
+                          <Button
+                            size="sm"
+                            onClick={async () => {
+                              if (!apiKeyInput.trim()) {
+                                toast({ type: "error", description: "Please enter your API key" });
+                                return;
+                              }
+
+                              if (!isValidApiKeyFormat(apiKeyInput)) {
+                                toast({ type: "error", description: "Invalid API key format" });
+                                return;
+                              }
+
+                              setIsApiKeyLoading(true);
+                              setApiKeyValidationMessage("Verifying with Claude...");
+
+                              try {
+                                const res = await validateClaudeApiKey(apiKeyInput);
+                                if (!res.valid) {
+                                  setApiKeyValidationMessage(res.error || "Invalid API key");
+                                  toast({ type: "error", description: res.error || "Invalid API key" });
+                                  setIsApiKeyLoading(false);
+                                  return;
+                                }
+
+                                await storeApiKey(apiKeyInput, storageModeInput);
+                                setApiKeyInput("");
+                                setApiKeyPresent(true);
+                                toast({ type: "success", description: "API key saved" });
+                              } catch (err) {
+                                console.error(err);
+                                toast({ type: "error", description: "Failed to validate or store API key" });
+                              } finally {
+                                setIsApiKeyLoading(false);
+                                setApiKeyValidationMessage("");
+                              }
+                            }}
+                          >
+                            Save
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                 </div>
 
                 <div className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-3">

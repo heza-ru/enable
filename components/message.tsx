@@ -51,6 +51,13 @@ const PurePreviewMessage = ({
     (part) => part.type === "file"
   );
 
+  console.log("[Message] Rendering message:", {
+    messageId: message.id,
+    role: message.role,
+    parts: message.parts,
+    partsCount: message.parts?.length,
+  });
+
   useDataStream();
 
   return (
@@ -119,6 +126,13 @@ const PurePreviewMessage = ({
 
             if (type === "text") {
               if (mode === "view") {
+                const textContent = sanitizeText(part.text);
+                console.log("[Message Debug] Text part:", {
+                  role: message.role,
+                  textContent,
+                  partText: part.text,
+                  partType: type,
+                });
                 return (
                   <div key={key}>
                     <MessageContent
@@ -135,7 +149,7 @@ const PurePreviewMessage = ({
                           : undefined
                       }
                     >
-                      <Response>{sanitizeText(part.text)}</Response>
+                      <Response>{textContent}</Response>
                     </MessageContent>
                   </div>
                 );

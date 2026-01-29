@@ -194,7 +194,7 @@ export function OnboardingDialog({
         <DialogHeader className="space-y-4">
           <div className="flex items-center justify-center">
             {step === 1 && (
-              <div className="flex items-center gap-2 text-2xl font-semibold">
+              <DialogTitle className="flex items-center justify-center gap-2 text-2xl font-semibold">
                 <span>Welcome to</span>
                 <img
                   alt="Enable Logo"
@@ -202,7 +202,7 @@ export function OnboardingDialog({
                   src="/logo.svg"
                 />
                 <span>enable</span>
-              </div>
+              </DialogTitle>
             )}
             {step !== 1 && (
               <DialogTitle className="text-2xl font-semibold">
