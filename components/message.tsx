@@ -220,6 +220,7 @@ const PurePreviewMessage = ({
                       <div
                         className="text-left text-foreground"
                         data-testid="message-content"
+                        style={{ color: 'hsl(var(--foreground))' }}
                       >
                         {looksLikeCsv(textContent) ? (
                           <div className="p-2">
@@ -240,9 +241,9 @@ const PurePreviewMessage = ({
                             <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
                           </div>
                         ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
-                          <Response>{textContent}</Response>
+                          <Response style={{ color: 'hsl(var(--foreground))' }}>{textContent}</Response>
                         ) : (
-                          <div data-testid="message-text" className="whitespace-pre-wrap text-sm text-foreground">
+                          <div data-testid="message-text" className="whitespace-pre-wrap text-sm text-foreground" style={{ color: 'hsl(var(--foreground))' }}>
                             {textContent}
                           </div>
                         )}
