@@ -88,7 +88,8 @@ export function AppSidebar() {
                       className="h-8 p-1 md:h-fit md:p-2"
                       onClick={() => {
                         setOpenMobile(false);
-                        router.push("/chat");
+                        router.push("/");
+                        router.refresh();
                       }}
                       type="button"
                       variant="ghost"
