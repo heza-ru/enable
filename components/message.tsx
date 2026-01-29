@@ -47,18 +47,29 @@ const PurePreviewMessage = ({
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
 
-  const attachmentsFromMessage = message.parts.filter(
+  const attachmentsFromMessage = message.parts?.filter(
     (part) => part.type === "file"
-  );
+  ) || [];
 
   console.log("[Message] Rendering message:", {
     messageId: message.id,
     role: message.role,
     parts: message.parts,
     partsCount: message.parts?.length,
+    hasParts: !!message.parts,
   });
 
   useDataStream();
+  
+  // Safety check: if no parts array, try to create one from legacy content field
+  const messageParts = message.parts || [];
+  if (messageParts.length === 0 && (message as any).content) {
+    console.log("[Message] No parts found, using legacy content field");
+    messageParts.push({
+      type: "text",
+      text: (message as any).content,
+    } as any);
+  }
 
   return (
     <div
@@ -109,7 +120,7 @@ const PurePreviewMessage = ({
             </div>
           )}
 
-          {message.parts?.map((part, index) => {
+          {messageParts.map((part, index) => {
             const { type } = part;
             const key = `message-${message.id}-part-${index}`;
 
@@ -158,11 +169,18 @@ const PurePreviewMessage = ({
                 console.log("[Message Debug] Text part:", {
                   role: message.role,
                   textContent,
+                  textLength: textContent?.length,
                   part,
                   partType: type,
                   isStreamingPart,
                   looksLikeMarkdown: looksLikeMarkdown(textContent),
                 });
+                
+                // Skip rendering if text is empty or just whitespace (unless streaming)
+                if (!isStreamingPart && (!textContent || !textContent.trim())) {
+                  console.log("[Message Debug] Skipping empty text part");
+                  return null;
+                }
 
                 return (
                   <div key={key}>
@@ -200,8 +218,7 @@ const PurePreviewMessage = ({
                       </div>
                     ) : (
                       <div
-                        className="text-left"
-                        style={{ color: "inherit" }}
+                        className="text-left text-foreground"
                         data-testid="message-content"
                       >
                         {looksLikeCsv(textContent) ? (
@@ -225,7 +242,7 @@ const PurePreviewMessage = ({
                         ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
                           <Response>{textContent}</Response>
                         ) : (
-                          <div data-testid="message-text" className="whitespace-pre-wrap text-sm">
+                          <div data-testid="message-text" className="whitespace-pre-wrap text-sm text-foreground">
                             {textContent}
                           </div>
                         )}

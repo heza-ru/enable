@@ -277,15 +277,28 @@ export function Chat({
           (m) => m.role === "assistant"
         );
         if (assistantMessage) {
+          console.log("[Cost Tracking] Checking for token data:", {
+            messageId: assistantMessage.id,
+            messageKeys: Object.keys(assistantMessage),
+            hasMetadata: !!(assistantMessage as any).experimental_providerMetadata,
+          });
+          
           // Try to extract token usage from message (cast to any to access metadata)
           const messageWithMetadata = assistantMessage as any;
-          const tokenUsage = messageWithMetadata.experimental_providerMetadata
-            ? extractTokenUsage(
-                messageWithMetadata.experimental_providerMetadata
-              )
-            : null;
+          let tokenUsage = null;
+          
+          // Try multiple sources for token data
+          if (messageWithMetadata.experimental_providerMetadata) {
+            tokenUsage = extractTokenUsage(messageWithMetadata.experimental_providerMetadata);
+          } else if (messageWithMetadata.metadata) {
+            tokenUsage = extractTokenUsage(messageWithMetadata.metadata);
+          } else if (messageWithMetadata.usage) {
+            tokenUsage = extractTokenUsage(messageWithMetadata);
+          }
+          
+          console.log("[Cost Tracking] Token usage extracted:", tokenUsage);
 
-          if (tokenUsage) {
+          if (tokenUsage && (tokenUsage.inputTokens > 0 || tokenUsage.outputTokens > 0)) {
             await saveCost(
               id,
               assistantMessage.id,
@@ -293,14 +306,17 @@ export function Chat({
               tokenUsage.inputTokens,
               tokenUsage.outputTokens
             );
-            console.log("[Cost Tracking] Cost saved:", {
+            console.log("[Cost Tracking] Cost saved successfully:", {
+              model: currentModelIdRef.current,
               inputTokens: tokenUsage.inputTokens,
               outputTokens: tokenUsage.outputTokens,
             });
+          } else {
+            console.warn("[Cost Tracking] No valid token usage found in assistant message");
           }
         }
       } catch (error) {
-        console.error("Failed to save cost:", error);
+        console.error("[Cost Tracking] Failed to save cost:", error);
       }
 
       // Auto-generate title from first user message
