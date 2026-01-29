@@ -149,7 +149,9 @@ const PurePreviewMessage = ({
                           : undefined
                       }
                     >
-                      <Response>{textContent}</Response>
+                      <div data-testid="message-text" className="whitespace-pre-wrap">
+                        {textContent}
+                      </div>
                     </MessageContent>
                   </div>
                 );
