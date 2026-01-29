@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { hasCompletedOnboarding } from "@/lib/storage/user-profile";
+import { GoogleAuth, getStoredGoogleAuth } from "./google-auth";
 import {
   KeyboardShortcutsDialog,
   useKeyboardShortcuts,
 } from "./keyboard-shortcuts-dialog";
 import { OnboardingDialog } from "./onboarding-dialog";
-import { GoogleAuth, getStoredGoogleAuth } from "./google-auth";
 
 interface OnboardingWrapperProps {
   children: React.ReactNode;
@@ -38,16 +38,16 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
     const storedGoogleAuth = getStoredGoogleAuth();
 
     if (!completed) {
-      if (!storedGoogleAuth) {
-        // Show Google auth first
-        setShowAuth(true);
-      } else {
+      if (storedGoogleAuth) {
         // User is authenticated, show onboarding
         setGoogleUser(storedGoogleAuth);
         setShowOnboarding(true);
+      } else {
+        // Show Google auth first
+        setShowAuth(true);
       }
     }
-    
+
     setIsChecking(false);
   }, []);
 
@@ -69,13 +69,13 @@ export function OnboardingWrapper({ children }: OnboardingWrapperProps) {
   return (
     <>
       {showAuth && (
-        <GoogleAuth open={showAuth} onAuthSuccess={handleAuthSuccess} />
+        <GoogleAuth onAuthSuccess={handleAuthSuccess} open={showAuth} />
       )}
       {showOnboarding && (
         <OnboardingDialog
+          googleUser={googleUser}
           onComplete={handleOnboardingComplete}
           open={showOnboarding}
-          googleUser={googleUser}
         />
       )}
       <KeyboardShortcutsDialog

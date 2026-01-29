@@ -23,7 +23,7 @@ interface ExportDialogProps {
 
 function formatMessageAsMarkdown(message: ChatMessage): string {
   const role = message.role === "user" ? "**You**" : "**Assistant**";
-  
+
   // Handle both old and new message formats
   let textParts = "";
   if (message.parts && Array.isArray(message.parts)) {
@@ -62,7 +62,7 @@ function formatMessagesAsText(messages: ChatMessage[]): string {
   return messages
     .map((msg) => {
       const role = msg.role === "user" ? "You" : "Assistant";
-      
+
       // Handle both old and new message formats
       let text = "";
       if (msg.parts && Array.isArray(msg.parts)) {
@@ -73,7 +73,7 @@ function formatMessagesAsText(messages: ChatMessage[]): string {
       } else if (typeof (msg as any).content === "string") {
         text = (msg as any).content;
       }
-      
+
       return `${role}:\n${text}`;
     })
     .join("\n\n");
@@ -110,9 +110,7 @@ export function ExportDialog({
               <ShareIcon className="size-5" />
               Export Conversation
             </DialogTitle>
-            <DialogDescription>
-              No messages to export
-            </DialogDescription>
+            <DialogDescription>No messages to export</DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>

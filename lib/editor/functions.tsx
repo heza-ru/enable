@@ -38,7 +38,9 @@ export const createDecorations = (
           class: "suggestion-highlight",
         },
         {
-          suggestionId: (suggestion as any).id || `${suggestion.selectionStart}-${suggestion.selectionEnd}`,
+          suggestionId:
+            (suggestion as any).id ||
+            `${suggestion.selectionStart}-${suggestion.selectionEnd}`,
           type: "highlight",
         }
       )
@@ -52,7 +54,9 @@ export const createDecorations = (
           return dom;
         },
         {
-          suggestionId: (suggestion as any).id || `${suggestion.selectionStart}-${suggestion.selectionEnd}`,
+          suggestionId:
+            (suggestion as any).id ||
+            `${suggestion.selectionStart}-${suggestion.selectionEnd}`,
           type: "widget",
         }
       )

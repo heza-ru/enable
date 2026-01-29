@@ -26,7 +26,7 @@ export const Greeting = ({ onSuggestionClick }: GreetingProps) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
-        transition={{ 
+        transition={{
           type: "spring",
           stiffness: 300,
           damping: 25,
@@ -46,7 +46,7 @@ export const Greeting = ({ onSuggestionClick }: GreetingProps) => {
         className="mb-4 text-muted-foreground text-xs sm:text-sm"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
-        transition={{ 
+        transition={{
           type: "spring",
           stiffness: 300,
           damping: 25,

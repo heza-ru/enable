@@ -3,7 +3,7 @@
  * Using Framer Motion for smooth, spring-based animations
  */
 
-import type { Variants, Transition } from "framer-motion";
+import type { Transition, Variants } from "framer-motion";
 
 /**
  * Spring physics presets
@@ -65,7 +65,7 @@ export const durations = {
  */
 export const fadeVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
     transition: springs.smooth,
   },
@@ -193,8 +193,8 @@ export const listItemVariants: Variants = {
  * Card animations
  */
 export const cardVariants: Variants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 20,
     scale: 0.95,
   },

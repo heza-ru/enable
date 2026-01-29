@@ -78,7 +78,11 @@ const PERSONALIZATION_EXAMPLES = [
   "Emphasize security and compliance",
 ];
 
-export function OnboardingDialog({ open, onComplete, googleUser }: OnboardingDialogProps) {
+export function OnboardingDialog({
+  open,
+  onComplete,
+  googleUser,
+}: OnboardingDialogProps) {
   const [step, setStep] = useState(1);
   const [name, setName] = useState(googleUser?.name || "");
   const [role, setRole] = useState<UserRole | null>(null);
@@ -347,7 +351,8 @@ export function OnboardingDialog({ open, onComplete, googleUser }: OnboardingDia
 
               <div className="space-y-2">
                 <Label htmlFor="api-key">
-                  Claude API Key <span className="text-muted-foreground">(Optional)</span>
+                  Claude API Key{" "}
+                  <span className="text-muted-foreground">(Optional)</span>
                 </Label>
                 <div className="relative">
                   <Input
@@ -535,28 +540,40 @@ export function OnboardingDialog({ open, onComplete, googleUser }: OnboardingDia
         <div className="flex items-center justify-between border-t border-[#2a2836]/30 pt-6">
           <div>
             {step > 1 && (
-              <Button onClick={handleBack} size="sm" variant="ghost" className="gap-2">
+              <Button
+                className="gap-2"
+                onClick={handleBack}
+                size="sm"
+                variant="ghost"
+              >
                 <ArrowLeft className="size-4" />
                 Back
               </Button>
             )}
           </div>
 
-          <div className="text-muted-foreground text-sm font-medium">Step {step} of 4</div>
+          <div className="text-muted-foreground text-sm font-medium">
+            Step {step} of 4
+          </div>
 
           <div className="flex items-center gap-2">
             {step === 3 && (
               <Button
+                className="text-muted-foreground"
                 onClick={handleSkipApiKey}
                 size="sm"
                 variant="ghost"
-                className="text-muted-foreground"
               >
                 Skip for now
               </Button>
             )}
             {step < 4 ? (
-              <Button disabled={isValidating} onClick={handleNext} size="sm" className="gap-2">
+              <Button
+                className="gap-2"
+                disabled={isValidating}
+                onClick={handleNext}
+                size="sm"
+              >
                 {isValidating ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
@@ -564,13 +581,17 @@ export function OnboardingDialog({ open, onComplete, googleUser }: OnboardingDia
                   </>
                 ) : (
                   <>
-                    {step === 3 && apiKey.trim() ? "Next" : step === 3 ? "Skip" : "Next"}
+                    {step === 3 && apiKey.trim()
+                      ? "Next"
+                      : step === 3
+                        ? "Skip"
+                        : "Next"}
                     <ArrowRight className="size-4" />
                   </>
                 )}
               </Button>
             ) : (
-              <Button onClick={handleComplete} size="sm" className="gap-2">
+              <Button className="gap-2" onClick={handleComplete} size="sm">
                 <Check className="size-4" />
                 Complete
               </Button>

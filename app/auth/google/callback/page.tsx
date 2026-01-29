@@ -9,17 +9,24 @@ export default function GoogleCallbackPage() {
         // Extract tokens from the URL fragment
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
-        const idToken = params.get('id_token');
-        const accessToken = params.get('access_token');
-        const error = params.get('error');
+        const idToken = params.get("id_token");
+        const accessToken = params.get("access_token");
+        const error = params.get("error");
 
-        console.log('OAuth callback received:', { hasIdToken: !!idToken, hasAccessToken: !!accessToken, error });
+        console.log("OAuth callback received:", {
+          hasIdToken: !!idToken,
+          hasAccessToken: !!accessToken,
+          error,
+        });
 
         if (error) {
           // Send error to opener
           if (window.opener) {
             window.opener.postMessage(
-              { type: 'GOOGLE_AUTH_ERROR', error: `Authentication failed: ${error}` },
+              {
+                type: "GOOGLE_AUTH_ERROR",
+                error: `Authentication failed: ${error}`,
+              },
               window.location.origin
             );
           }
@@ -30,7 +37,10 @@ export default function GoogleCallbackPage() {
         if (!idToken) {
           if (window.opener) {
             window.opener.postMessage(
-              { type: 'GOOGLE_AUTH_ERROR', error: 'No ID token received from Google' },
+              {
+                type: "GOOGLE_AUTH_ERROR",
+                error: "No ID token received from Google",
+              },
               window.location.origin
             );
           }
@@ -39,13 +49,13 @@ export default function GoogleCallbackPage() {
         }
 
         // Decode JWT to get user info
-        const base64Url = idToken.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const base64Url = idToken.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
         const jsonPayload = decodeURIComponent(
           atob(base64)
-            .split('')
-            .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-            .join('')
+            .split("")
+            .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
+            .join("")
         );
 
         const user = JSON.parse(jsonPayload);
@@ -53,14 +63,14 @@ export default function GoogleCallbackPage() {
         // Send user data to opener window
         if (window.opener && !window.opener.closed) {
           window.opener.postMessage(
-            { 
-              type: 'GOOGLE_AUTH_SUCCESS', 
+            {
+              type: "GOOGLE_AUTH_SUCCESS",
               user: {
                 email: user.email,
                 name: user.name,
                 picture: user.picture,
                 sub: user.sub,
-              }
+              },
             },
             window.location.origin
           );
@@ -69,10 +79,13 @@ export default function GoogleCallbackPage() {
         // Close popup after a short delay
         setTimeout(() => window.close(), 500);
       } catch (err) {
-        console.error('Failed to process authentication:', err);
+        console.error("Failed to process authentication:", err);
         if (window.opener && !window.opener.closed) {
           window.opener.postMessage(
-            { type: 'GOOGLE_AUTH_ERROR', error: 'Failed to process authentication token' },
+            {
+              type: "GOOGLE_AUTH_ERROR",
+              error: "Failed to process authentication token",
+            },
             window.location.origin
           );
         }

@@ -14,9 +14,9 @@ import {
 function GoogleIcon() {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
       className="w-5 h-5"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -69,14 +69,16 @@ declare global {
               width?: number;
             }
           ) => void;
-          prompt: (notification?: (notification: {
-            isNotDisplayed: () => boolean;
-            isSkippedMoment: () => boolean;
-            isDismissedMoment: () => boolean;
-            getNotDisplayedReason: () => string;
-            getSkippedReason: () => string;
-            getDismissedReason: () => string;
-          }) => void) => void;
+          prompt: (
+            notification?: (notification: {
+              isNotDisplayed: () => boolean;
+              isSkippedMoment: () => boolean;
+              isDismissedMoment: () => boolean;
+              getNotDisplayedReason: () => string;
+              getSkippedReason: () => string;
+              getDismissedReason: () => string;
+            }) => void
+          ) => void;
         };
         oauth2: {
           initTokenClient: (config: {
@@ -118,26 +120,28 @@ export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
     // Listen for OAuth callback messages
     const handleMessage = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
-      
-      if (event.data.type === 'GOOGLE_AUTH_SUCCESS' && event.data.user) {
+
+      if (event.data.type === "GOOGLE_AUTH_SUCCESS" && event.data.user) {
         handleAuthSuccess(event.data.user);
-      } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
+      } else if (event.data.type === "GOOGLE_AUTH_ERROR") {
         setError(event.data.error || "Authentication failed");
         setIsLoading(false);
       }
     };
 
-    window.addEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
 
     return () => {
-      window.removeEventListener('message', handleMessage);
+      window.removeEventListener("message", handleMessage);
     };
   }, [open]);
 
   const handleCustomGoogleSignIn = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
     if (!clientId) {
-      setError("Google Client ID not configured. Please add NEXT_PUBLIC_GOOGLE_CLIENT_ID to your .env file.");
+      setError(
+        "Google Client ID not configured. Please add NEXT_PUBLIC_GOOGLE_CLIENT_ID to your .env file."
+      );
       return;
     }
 
@@ -146,27 +150,27 @@ export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
 
     // Build OAuth URL with proper parameters for implicit flow
     const redirectUri = `${window.location.origin}/auth/google/callback`;
-    const scope = 'openid email profile';
-    const responseType = 'id_token token';
+    const scope = "openid email profile";
+    const responseType = "id_token token";
     const nonce = Math.random().toString(36).substring(2);
-    
-    const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-    authUrl.searchParams.set('client_id', clientId);
-    authUrl.searchParams.set('redirect_uri', redirectUri);
-    authUrl.searchParams.set('response_type', responseType);
-    authUrl.searchParams.set('scope', scope);
-    authUrl.searchParams.set('nonce', nonce);
-    authUrl.searchParams.set('prompt', 'select_account');
+
+    const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+    authUrl.searchParams.set("client_id", clientId);
+    authUrl.searchParams.set("redirect_uri", redirectUri);
+    authUrl.searchParams.set("response_type", responseType);
+    authUrl.searchParams.set("scope", scope);
+    authUrl.searchParams.set("nonce", nonce);
+    authUrl.searchParams.set("prompt", "select_account");
 
     // Open popup
     const width = 500;
     const height = 600;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
-    
+
     const popup = window.open(
       authUrl.toString(),
-      'Google Sign In',
+      "Google Sign In",
       `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`
     );
 
@@ -201,7 +205,11 @@ export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
           {error ? (
             <div className="text-center space-y-4 p-4 rounded-lg bg-destructive/10">
               <p className="text-destructive text-sm">{error}</p>
-              <Button onClick={() => window.location.reload()} variant="outline" className="mt-2">
+              <Button
+                className="mt-2"
+                onClick={() => window.location.reload()}
+                variant="outline"
+              >
                 Retry
               </Button>
             </div>
@@ -209,10 +217,10 @@ export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
             <>
               {/* Custom styled button */}
               <Button
-                onClick={handleCustomGoogleSignIn}
-                disabled={isLoading}
-                type="button"
                 className="w-full max-w-sm h-12 gap-3 bg-background hover:bg-accent hover:border-primary/50 text-foreground border border-[#2a2836] shadow-sm transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
+                onClick={handleCustomGoogleSignIn}
+                type="button"
                 variant="outline"
               >
                 {isLoading ? (
@@ -236,7 +244,7 @@ export function GoogleAuth({ onAuthSuccess, open }: GoogleAuthProps) {
             By signing in, you agree to our Terms of Service and Privacy Policy.
           </p>
           <p className="flex items-center justify-center gap-1.5">
-            <span className="inline-block w-1 h-1 rounded-full bg-green-500"></span>
+            <span className="inline-block w-1 h-1 rounded-full bg-green-500" />
             Your data is stored locally and never sent to our servers
           </p>
         </div>

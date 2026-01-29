@@ -220,7 +220,10 @@ export function Chat({
         // Get API key and add to headers
         const apiKey = await getApiKey();
         if (!apiKey) {
-          toast({ type: "error", description: "API key is missing. Please check Settings." });
+          toast({
+            type: "error",
+            description: "API key is missing. Please check Settings.",
+          });
           throw new Error("API key is required");
         }
 
@@ -276,8 +279,10 @@ export function Chat({
         if (assistantMessage) {
           // Try to extract token usage from message (cast to any to access metadata)
           const messageWithMetadata = assistantMessage as any;
-          const tokenUsage = messageWithMetadata.experimental_providerMetadata 
-            ? extractTokenUsage(messageWithMetadata.experimental_providerMetadata)
+          const tokenUsage = messageWithMetadata.experimental_providerMetadata
+            ? extractTokenUsage(
+                messageWithMetadata.experimental_providerMetadata
+              )
             : null;
 
           if (tokenUsage) {

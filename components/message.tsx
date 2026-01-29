@@ -331,7 +331,13 @@ const PurePreviewMessage = ({
                           ) : (
                             <DocumentToolResult
                               isReadonly={isReadonly}
-                              result={part.output as { id: string; title: string; kind: any }}
+                              result={
+                                part.output as {
+                                  id: string;
+                                  title: string;
+                                  kind: any;
+                                }
+                              }
                               type="request-suggestions"
                             />
                           )

@@ -3,13 +3,13 @@
  * Supports multiple color themes with smooth transitions
  */
 
-export type ThemeName = 
-  | "light" 
-  | "dark" 
-  | "ocean" 
-  | "forest" 
-  | "sunset" 
-  | "midnight" 
+export type ThemeName =
+  | "light"
+  | "dark"
+  | "ocean"
+  | "forest"
+  | "sunset"
+  | "midnight"
   | "lavender"
   | "rose";
 
@@ -324,7 +324,7 @@ export const themes: Record<ThemeName, Theme> = {
 // Get theme from localStorage
 export function getStoredTheme(): ThemeName {
   if (typeof window === "undefined") return "dark";
-  
+
   try {
     const stored = localStorage.getItem("enable_theme");
     if (stored && stored in themes) {
@@ -333,14 +333,14 @@ export function getStoredTheme(): ThemeName {
   } catch (error) {
     console.error("Failed to get stored theme:", error);
   }
-  
+
   return "dark";
 }
 
 // Save theme to localStorage
 export function saveTheme(theme: ThemeName): void {
   if (typeof window === "undefined") return;
-  
+
   try {
     localStorage.setItem("enable_theme", theme);
   } catch (error) {
@@ -349,15 +349,18 @@ export function saveTheme(theme: ThemeName): void {
 }
 
 // Apply theme to document
-export function applyTheme(themeName: ThemeName, mode: "light" | "dark" = "dark"): void {
+export function applyTheme(
+  themeName: ThemeName,
+  mode: "light" | "dark" = "dark"
+): void {
   if (typeof window === "undefined") return;
-  
+
   const theme = themes[themeName];
   if (!theme) return;
-  
+
   const colors = theme.colors[mode];
   const root = document.documentElement;
-  
+
   // Apply CSS variables
   root.style.setProperty("--background", colors.background);
   root.style.setProperty("--foreground", colors.foreground);
@@ -371,7 +374,7 @@ export function applyTheme(themeName: ThemeName, mode: "light" | "dark" = "dark"
   root.style.setProperty("--accent-foreground", colors.accentForeground);
   root.style.setProperty("--border", colors.border);
   root.style.setProperty("--ring", colors.ring);
-  
+
   // Save theme
   saveTheme(themeName);
 }
