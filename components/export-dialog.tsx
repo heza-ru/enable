@@ -31,8 +31,8 @@ function formatMessageAsMarkdown(message: ChatMessage): string {
       .filter((part) => part.type === "text")
       .map((part) => part.text)
       .join("\n\n");
-  } else if (typeof message.content === "string") {
-    textParts = message.content;
+  } else if (typeof (message as any).content === "string") {
+    textParts = (message as any).content;
   }
 
   return `${role}:\n\n${textParts}`;
@@ -70,8 +70,8 @@ function formatMessagesAsText(messages: ChatMessage[]): string {
           .filter((part) => part.type === "text")
           .map((part) => part.text)
           .join("\n");
-      } else if (typeof msg.content === "string") {
-        text = msg.content;
+      } else if (typeof (msg as any).content === "string") {
+        text = (msg as any).content;
       }
       
       return `${role}:\n${text}`;

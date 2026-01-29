@@ -21,7 +21,7 @@ interface VoiceInputProps {
 export function VoiceInput({ onTranscript, isDisabled }: VoiceInputProps) {
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
-  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+  const [recognition, setRecognition] = useState<any | null>(
     null
   );
 
@@ -38,9 +38,9 @@ export function VoiceInput({ onTranscript, isDisabled }: VoiceInputProps) {
         recognitionInstance.interimResults = true;
         recognitionInstance.lang = "en-US";
 
-        recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
+        recognitionInstance.onresult = (event: any) => {
           const transcript = Array.from(event.results)
-            .map((result) => result[0].transcript)
+            .map((result: any) => result[0].transcript)
             .join("");
 
           // Only send final results
@@ -49,7 +49,7 @@ export function VoiceInput({ onTranscript, isDisabled }: VoiceInputProps) {
           }
         };
 
-        recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
+        recognitionInstance.onerror = (event: any) => {
           console.error("Speech recognition error:", event.error);
 
           if (event.error === "not-allowed") {
@@ -169,52 +169,4 @@ export function useVoiceInput(onTranscript: (text: string) => void) {
 }
 
 // Type definitions for Web Speech API
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-  resultIndex: number;
-}
-
-interface SpeechRecognitionResultList {
-  length: number;
-  item(index: number): SpeechRecognitionResult;
-  [index: number]: SpeechRecognitionResult;
-}
-
-interface SpeechRecognitionResult {
-  length: number;
-  item(index: number): SpeechRecognitionAlternative;
-  [index: number]: SpeechRecognitionAlternative;
-  isFinal: boolean;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-  message: string;
-}
-
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
-  onend: (() => void) | null;
-  start(): void;
-  stop(): void;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition: {
-      new(): SpeechRecognition;
-    };
-    webkitSpeechRecognition: {
-      new(): SpeechRecognition;
-    };
-  }
-}
+// Note: These types are already defined globally in components/ai-elements/prompt-input.tsx

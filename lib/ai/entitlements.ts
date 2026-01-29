@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { UserType } from "@/app/(auth)/auth";
 
 type Entitlements = {

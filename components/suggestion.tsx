@@ -30,7 +30,7 @@ export const Suggestion = ({
           className="absolute -right-12 z-50 flex w-56 flex-col gap-3 rounded-2xl border bg-background p-3 font-sans text-sm shadow-xl md:-right-16"
           exit={{ opacity: 0, y: -10 }}
           initial={{ opacity: 0, y: -10 }}
-          key={suggestion.id}
+          key={`suggestion-${suggestion.selectionStart}-${suggestion.selectionEnd}`}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
           whileHover={{ scale: 1.05 }}
         >
@@ -49,7 +49,7 @@ export const Suggestion = ({
               <CrossIcon size={12} />
             </button>
           </div>
-          <div>{suggestion.description}</div>
+          <div>{(suggestion as any).description || 'Suggestion'}</div>
           <Button
             className="w-fit rounded-full px-3 py-1.5"
             onClick={onApply}

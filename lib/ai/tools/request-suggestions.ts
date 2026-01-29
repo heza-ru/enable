@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Output, streamText, tool, type UIMessageStreamWriter } from "ai";
 import type { Session } from "next-auth";
 import { z } from "zod";

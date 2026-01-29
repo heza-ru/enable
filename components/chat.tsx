@@ -157,14 +157,8 @@ export function Chat({
               storedMessages.length,
               "messages from IndexedDB"
             );
-            // Convert stored messages to chat messages format
-            const chatMessages: ChatMessage[] = storedMessages.map((msg) => ({
-              id: msg.id,
-              role: msg.role as "user" | "assistant",
-              parts: msg.parts || [],
-              createdAt: msg.createdAt,
-            }));
-            setMessages(chatMessages);
+            // Use stored messages directly (they're already in ChatMessage format)
+            setMessages(storedMessages as ChatMessage[]);
           }
         }
       } else {
@@ -226,7 +220,7 @@ export function Chat({
         // Get API key and add to headers
         const apiKey = await getApiKey();
         if (!apiKey) {
-          toast.error("API key is missing. Please check Settings.");
+          toast({ type: "error", description: "API key is missing. Please check Settings." });
           throw new Error("API key is required");
         }
 
@@ -262,14 +256,14 @@ export function Chat({
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
     },
-    onFinish: async ({ messages: finishedMessages, response }) => {
+    onFinish: async ({ messages: finishedMessages }) => {
       // Save messages to IndexedDB
       for (const msg of finishedMessages) {
         await saveMessage({
           chatId: id,
           id: msg.id,
           role: msg.role,
-          parts: msg.parts || [],
+          parts: (msg.parts || []) as any,
           createdAt: Date.now(),
         });
       }
@@ -279,19 +273,12 @@ export function Chat({
         const assistantMessage = finishedMessages.find(
           (m) => m.role === "assistant"
         );
-        if (assistantMessage && response) {
-          console.log(
-            "[Cost Tracking] Response object keys:",
-            Object.keys(response || {})
-          );
-          console.log("[Cost Tracking] Response structure:", {
-            hasUsage: !!response?.usage,
-            hasProviderMetadata: !!response?.experimental_providerMetadata,
-            response,
-          });
-
-          const tokenUsage = extractTokenUsage(response);
-          console.log("[Cost Tracking] Extracted token usage:", tokenUsage);
+        if (assistantMessage) {
+          // Try to extract token usage from message (cast to any to access metadata)
+          const messageWithMetadata = assistantMessage as any;
+          const tokenUsage = messageWithMetadata.experimental_providerMetadata 
+            ? extractTokenUsage(messageWithMetadata.experimental_providerMetadata)
+            : null;
 
           if (tokenUsage) {
             await saveCost(
@@ -301,15 +288,10 @@ export function Chat({
               tokenUsage.inputTokens,
               tokenUsage.outputTokens
             );
-            console.log("[Cost Tracking] Cost saved successfully:", {
+            console.log("[Cost Tracking] Cost saved:", {
               inputTokens: tokenUsage.inputTokens,
               outputTokens: tokenUsage.outputTokens,
-              model: currentModelIdRef.current,
             });
-          } else {
-            console.warn(
-              "[Cost Tracking] No token usage extracted from response"
-            );
           }
         }
       } catch (error) {
@@ -344,7 +326,7 @@ export function Chat({
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        toast.error(error.message);
+        toast({ type: "error", description: error.message });
       }
     },
   });

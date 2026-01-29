@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   }
 
   // Enable is client-side only - documents stored in IndexedDB
-  const documents = await getDocumentsById({ id });
+  const documents = await getDocumentsById(id);
 
   const [document] = documents;
 
@@ -81,10 +81,10 @@ export async function DELETE(request: Request) {
 
   // Enable is client-side only - no authentication required
 
-  const documentsDeleted = await deleteDocumentsByIdAfterTimestamp({
+  const documentsDeleted = await deleteDocumentsByIdAfterTimestamp(
     id,
-    timestamp: new Date(timestamp),
-  });
+    new Date(timestamp)
+  );
 
   return Response.json(documentsDeleted, { status: 200 });
 }
