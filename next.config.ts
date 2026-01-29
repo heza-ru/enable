@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
               : // Production: Strict CSP
                 [
                   "default-src 'self'",
-                  "script-src 'self' 'unsafe-inline' https://accounts.google.com",
+                  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com",
                   "style-src 'self' 'unsafe-inline' https://accounts.google.com",
                   "img-src 'self' data: blob: https:",
                   "font-src 'self' data: https://fonts.gstatic.com",
