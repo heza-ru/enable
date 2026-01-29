@@ -8,6 +8,7 @@ import { SpreadsheetEditor } from "./sheet-editor";
 import { useDataStream } from "./data-stream-provider";
 import { DocumentToolResult } from "./document";
 import { DocumentPreview } from "./document-preview";
+import { MessageContent } from "./elements/message";
 import { Response } from "./elements/response";
 import {
   Tool,
@@ -185,8 +186,8 @@ const PurePreviewMessage = ({
                 return (
                   <div key={key}>
                     {message.role === "user" ? (
-                      <div
-                        className="wrap-break-word w-fit rounded-2xl px-3 py-2 text-right text-white"
+                      <MessageContent
+                        className="w-fit rounded-2xl px-3 py-2 text-white"
                         style={{ backgroundColor: "#006cff" }}
                         data-testid="message-content"
                       >
@@ -211,14 +212,12 @@ const PurePreviewMessage = ({
                         ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
                           <Response>{textContent}</Response>
                         ) : (
-                          <div data-testid="message-text" className="whitespace-pre-wrap">
-                            {textContent}
-                          </div>
+                          <span data-testid="message-text">{textContent}</span>
                         )}
-                      </div>
+                      </MessageContent>
                     ) : (
-                      <div
-                        className="text-left text-foreground"
+                      <MessageContent
+                        className="text-foreground"
                         data-testid="message-content"
                       >
                         {looksLikeCsv(textContent) ? (
@@ -242,11 +241,9 @@ const PurePreviewMessage = ({
                         ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
                           <Response>{textContent}</Response>
                         ) : (
-                          <div data-testid="message-text" className="whitespace-pre-wrap text-sm text-foreground">
-                            {textContent}
-                          </div>
+                          <span data-testid="message-text">{textContent}</span>
                         )}
-                      </div>
+                      </MessageContent>
                     )}
                   </div>
                 );
