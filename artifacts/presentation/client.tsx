@@ -92,12 +92,13 @@ export const presentationArtifact = new Artifact<"presentation", Metadata>({
     {
       icon: <DownloadIcon size={18} />,
       description: "Download as markdown",
-      onClick: ({ content, artifact }) => {
+      onClick: ({ content }) => {
         const blob = new Blob([content], { type: "text/markdown" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `${artifact.title.replace(/\s+/g, "-").toLowerCase()}.md`;
+        const timestamp = new Date().toISOString().split("T")[0];
+        a.download = `presentation-${timestamp}.md`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
