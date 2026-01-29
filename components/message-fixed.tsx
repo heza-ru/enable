@@ -16,7 +16,6 @@ import {
   ToolInput,
   ToolOutput,
 } from "./elements/tool";
-import { SparklesIcon } from "./icons";
 import { MessageActions } from "./message-actions";
 import { MessageEditor } from "./message-editor";
 import { MessageReasoning } from "./message-reasoning";
@@ -54,48 +53,48 @@ const PurePreviewMessage = ({
   console.log("[Message] Rendering message:", {
     messageId: message.id,
     role: message.role,
-    parts: message.parts,
     partsCount: message.parts?.length,
+    parts: message.parts?.map(p => ({ type: p.type, keys: Object.keys(p || {}) })),
   });
 
   useDataStream();
 
+  const isUser = message.role === "user";
+  const isAssistant = message.role === "assistant";
+
   return (
     <div
-      className={cn("group fade-in w-full animate-in duration-300 slide-in-from-bottom-2", {
-        "is-user": message.role === "user",
-        "is-assistant": message.role === "assistant",
+      className={cn("group w-full animate-in slide-in-from-bottom-2 duration-300", {
+        "is-user": isUser,
+        "is-assistant": isAssistant,
       })}
       data-role={message.role}
       data-testid={`message-${message.role}`}
     >
       <div
         className={cn("flex w-full items-start gap-2 md:gap-3", {
-          "justify-end": message.role === "user" && mode !== "edit",
-          "justify-start": message.role === "assistant",
+          "justify-end": isUser && mode !== "edit",
+          "justify-start": isAssistant,
         })}
       >
         <div
           className={cn("flex flex-col", {
             "gap-2 md:gap-4": message.parts?.some(
-              (p) => p.type === "text" && p.text?.trim()
+              (p) => p.type === "text" && extractPartText(p)?.trim()
             ),
             "w-full":
-              (message.role === "assistant" &&
+              (isAssistant &&
                 (message.parts?.some(
-                  (p) => p.type === "text" && p.text?.trim()
+                  (p) => p.type === "text" && extractPartText(p)?.trim()
                 ) ||
                   message.parts?.some((p) => p.type.startsWith("tool-")))) ||
               mode === "edit",
             "max-w-[calc(100%-2.5rem)] sm:max-w-[min(fit-content,80%)]":
-              message.role === "user" && mode !== "edit",
+              isUser && mode !== "edit",
           })}
         >
           {attachmentsFromMessage.length > 0 && (
-            <div
-              className="flex flex-row justify-end gap-2"
-              data-testid={"message-attachments"}
-            >
+            <div className="flex flex-row justify-end gap-2" data-testid="message-attachments">
               {attachmentsFromMessage.map((attachment) => (
                 <PreviewAttachment
                   attachment={{
@@ -113,15 +112,18 @@ const PurePreviewMessage = ({
             const { type } = part;
             const key = `message-${message.id}-part-${index}`;
 
+            console.log("[Part]", index, "type:", type, "part:", part);
+
             if (type === "reasoning") {
-              const hasContent = part.text?.trim().length > 0;
-              const isStreaming = "state" in part && part.state === "streaming";
+              const reasoningText = extractPartText(part);
+              const hasContent = reasoningText?.trim().length > 0;
+              const isStreaming = "state" in (part as any) && (part as any).state === "streaming";
               if (hasContent || isStreaming) {
                 return (
                   <MessageReasoning
                     isLoading={isLoading || isStreaming}
                     key={key}
-                    reasoning={part.text || ""}
+                    reasoning={reasoningText || ""}
                   />
                 );
               }
@@ -131,9 +133,7 @@ const PurePreviewMessage = ({
               if (mode === "view") {
                 const raw = extractPartText(part);
                 const textContent = sanitizeText(raw);
-                const isStreamingPart =
-                  typeof part === "object" && "state" in part &&
-                  (part as any).state === "streaming";
+                const isStreamingPart = "state" in (part as any) && (part as any).state === "streaming";
 
                 const looksLikeMarkdown = (s: string) =>
                   /(^#{1,6}\s)|(```)|(`[^`])|(\*\*)|(\[.+\]\(.+\))|(!\[)/m.test(s);
@@ -143,104 +143,69 @@ const PurePreviewMessage = ({
                   const lines = s.split(/\r?\n/).filter((l) => l.trim().length > 0);
                   if (lines.length < 2) return false;
                   const counts = lines.slice(0, Math.min(5, lines.length)).map((l) => l.split(",").length);
-                  // If most of the lines have more than 1 column and counts are similar
                   const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
                   return avg >= 2 && Math.min(...counts) / Math.max(...counts) >= 0.5;
                 };
 
                 const looksLikeEmail = (s: string) => {
-                  if (!s) return false;
-                  const hasHeaders = /(From:|To:|Subject:)/i.test(s);
-                  // also check for typical email separators
-                  return hasHeaders;
+                  return /(From:|To:|Subject:)/i.test(s);
                 };
 
-                console.log("[Message Debug] Text part:", {
+                console.log("[Text Render]", {
                   role: message.role,
-                  textContent,
-                  part,
-                  partType: type,
-                  isStreamingPart,
-                  looksLikeMarkdown: looksLikeMarkdown(textContent),
+                  len: textContent?.length,
+                  preview: textContent?.substring(0, 60),
+                  csv: looksLikeCsv(textContent),
+                  email: looksLikeEmail(textContent),
+                  md: looksLikeMarkdown(textContent),
                 });
 
-                return (
-                  <div key={key}>
-                    {message.role === "user" ? (
-                      <div
-                        className="wrap-break-word w-fit rounded-2xl px-3 py-2 text-right text-white"
-                        style={{ backgroundColor: "#006cff" }}
-                        data-testid="message-content"
-                      >
-                        {looksLikeCsv(textContent) ? (
-                          <div className="p-2">
-                            <div className="mb-2 text-xs text-muted-foreground">Spreadsheet</div>
-                            <div className="h-64 overflow-hidden rounded border">
-                              <SpreadsheetEditor
-                                content={textContent}
-                                saveContent={() => null}
-                                currentVersionIndex={0}
-                                isCurrentVersion={true}
-                                status={isStreamingPart ? "streaming" : "idle"}
-                              />
-                            </div>
-                          </div>
-                        ) : looksLikeEmail(textContent) ? (
-                          <div className="rounded-lg border p-3">
-                            <div className="mb-2 text-sm font-medium">Email</div>
-                            <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
-                          </div>
-                        ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
-                          <Response>{textContent}</Response>
-                        ) : (
-                          <div data-testid="message-text" className="whitespace-pre-wrap">
-                            {textContent}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div
-                        className="text-left"
-                        style={{ color: "inherit" }}
-                        data-testid="message-content"
-                      >
-                        {looksLikeCsv(textContent) ? (
-                          <div className="p-2">
-                            <div className="mb-2 text-xs text-muted-foreground">Spreadsheet</div>
-                            <div className="h-64 overflow-hidden rounded border">
-                              <SpreadsheetEditor
-                                content={textContent}
-                                saveContent={() => null}
-                                currentVersionIndex={0}
-                                isCurrentVersion={true}
-                                status={isStreamingPart ? "streaming" : "idle"}
-                              />
-                            </div>
-                          </div>
-                        ) : looksLikeEmail(textContent) ? (
-                          <div className="rounded-lg border p-3">
-                            <div className="mb-2 text-sm font-medium">Email</div>
-                            <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
-                          </div>
-                        ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
-                          <Response>{textContent}</Response>
-                        ) : (
-                          <div data-testid="message-text" className="whitespace-pre-wrap text-sm">
-                            {textContent}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                // Use direct div with minimal styling for assistant to ensure visibility
+                const content = looksLikeCsv(textContent) ? (
+                  <div className="p-2">
+                    <div className="mb-2 text-xs text-muted-foreground">Spreadsheet</div>
+                    <div className="h-64 overflow-hidden rounded border">
+                      <SpreadsheetEditor
+                        content={textContent}
+                        saveContent={() => null}
+                        currentVersionIndex={0}
+                        isCurrentVersion={true}
+                        status={isStreamingPart ? "streaming" : "idle"}
+                      />
+                    </div>
                   </div>
+                ) : looksLikeEmail(textContent) ? (
+                  <div className="rounded-lg border p-3">
+                    <div className="mb-2 text-sm font-medium">Email</div>
+                    <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
+                  </div>
+                ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
+                  <Response>{textContent}</Response>
+                ) : (
+                  <div className="whitespace-pre-wrap text-sm">{textContent}</div>
                 );
+
+                if (isUser) {
+                  return (
+                    <div
+                      key={key}
+                      className="w-fit max-w-[100%] rounded-2xl bg-blue-500 px-3 py-2 text-right text-white"
+                    >
+                      {content}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={key} className="w-full text-left text-foreground">
+                      {content}
+                    </div>
+                  );
+                }
               }
 
               if (mode === "edit") {
                 return (
-                  <div
-                    className="flex w-full flex-row items-start gap-3"
-                    key={key}
-                  >
+                  <div className="flex w-full flex-row items-start gap-3" key={key}>
                     <div className="size-8" />
                     <div className="min-w-0 flex-1">
                       <MessageEditor
@@ -258,13 +223,11 @@ const PurePreviewMessage = ({
 
             if (type === "tool-getWeather") {
               const { toolCallId, state } = part;
-              const approvalId = (part as { approval?: { id: string } })
-                .approval?.id;
+              const approvalId = (part as { approval?: { id: string } }).approval?.id;
               const isDenied =
                 state === "output-denied" ||
                 (state === "approval-responded" &&
-                  (part as { approval?: { approved?: boolean } }).approval
-                    ?.approved === false);
+                  (part as { approval?: { approved?: boolean } }).approval?.approved === false);
               const widthClass = "w-[min(100%,450px)]";
 
               if (state === "output-available") {
@@ -279,10 +242,7 @@ const PurePreviewMessage = ({
                 return (
                   <div className={widthClass} key={toolCallId}>
                     <Tool className="w-full" defaultOpen={true}>
-                      <ToolHeader
-                        state="output-denied"
-                        type="tool-getWeather"
-                      />
+                      <ToolHeader state="output-denied" type="tool-getWeather" />
                       <ToolContent>
                         <div className="px-4 py-3 text-muted-foreground text-sm">
                           Weather lookup was denied.
@@ -311,8 +271,7 @@ const PurePreviewMessage = ({
                   <Tool className="w-full" defaultOpen={true}>
                     <ToolHeader state={state} type="tool-getWeather" />
                     <ToolContent>
-                      {(state === "input-available" ||
-                        state === "approval-requested") && (
+                      {(state === "input-available" || state === "approval-requested") && (
                         <ToolInput input={part.input} />
                       )}
                       {state === "approval-requested" && approvalId && (
@@ -352,18 +311,16 @@ const PurePreviewMessage = ({
 
             if (type === "tool-createDocument") {
               const { toolCallId } = part;
-
               if (part.output && "error" in part.output) {
                 return (
                   <div
                     className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-500 dark:bg-red-950/50"
                     key={toolCallId}
                   >
-                    Error creating document: {String(part.output.error)}
+                    Error: {String(part.output.error)}
                   </div>
                 );
               }
-
               return (
                 <DocumentPreview
                   isReadonly={isReadonly}
@@ -375,18 +332,16 @@ const PurePreviewMessage = ({
 
             if (type === "tool-updateDocument") {
               const { toolCallId } = part;
-
               if (part.output && "error" in part.output) {
                 return (
                   <div
                     className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-500 dark:bg-red-950/50"
                     key={toolCallId}
                   >
-                    Error updating document: {String(part.output.error)}
+                    Error: {String(part.output.error)}
                   </div>
                 );
               }
-
               return (
                 <div className="relative" key={toolCallId}>
                   <DocumentPreview
@@ -400,14 +355,11 @@ const PurePreviewMessage = ({
 
             if (type === "tool-requestSuggestions") {
               const { toolCallId, state } = part;
-
               return (
                 <Tool defaultOpen={true} key={toolCallId}>
                   <ToolHeader state={state} type="tool-requestSuggestions" />
                   <ToolContent>
-                    {state === "input-available" && (
-                      <ToolInput input={part.input} />
-                    )}
+                    {state === "input-available" && <ToolInput input={part.input} />}
                     {state === "output-available" && (
                       <ToolOutput
                         errorText={undefined}
@@ -419,13 +371,7 @@ const PurePreviewMessage = ({
                           ) : (
                             <DocumentToolResult
                               isReadonly={isReadonly}
-                              result={
-                                part.output as {
-                                  id: string;
-                                  title: string;
-                                  kind: any;
-                                }
-                              }
+                              result={part.output as { id: string; title: string; kind: any }}
                               type="request-suggestions"
                             />
                           )
