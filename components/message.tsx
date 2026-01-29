@@ -241,7 +241,9 @@ const PurePreviewMessage = ({
                             <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
                           </div>
                         ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
-                          <Response style={{ color: 'hsl(var(--foreground))' }}>{textContent}</Response>
+                          <div style={{ color: 'hsl(var(--foreground))' }}>
+                            <Response>{textContent}</Response>
+                          </div>
                         ) : (
                           <div data-testid="message-text" className="whitespace-pre-wrap text-sm text-foreground" style={{ color: 'hsl(var(--foreground))' }}>
                             {textContent}
