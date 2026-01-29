@@ -10,9 +10,8 @@ export const MessageContent = ({
 }: MessageContentProps) => (
   <div
     className={cn(
-      "text-sm",
-      "break-words whitespace-pre-wrap",
-      "text-left text-foreground",
+      "text-sm leading-relaxed",
+      "break-words overflow-wrap-anywhere",
       className
     )}
     {...props}

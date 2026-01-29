@@ -143,6 +143,9 @@ export function SettingsDialog({
     const mode = resolvedTheme === "dark" ? "dark" : "light";
     applyTheme(themeName, mode);
 
+    // Force a reflow to ensure CSS variables are applied
+    document.documentElement.offsetHeight;
+
     toast({
       type: "success",
       description: `${themes[themeName].name} theme applied`,
@@ -230,7 +233,7 @@ export function SettingsDialog({
             </Button>
           </DialogTrigger>
         )}
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px] bg-card dark:bg-background">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px] bg-background border-border">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="size-5" />

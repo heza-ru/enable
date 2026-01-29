@@ -54,38 +54,32 @@ const PurePreviewMessage = ({
 
   useDataStream();
 
+  // Check if the message content container should render
+  const hasTextContent = message.parts?.some(
+    (p) => p.type === "text" && p.text?.trim()
+  );
+  const hasStreamingText = message.parts?.some(
+    (p) => p.type === "text" && "state" in p && (p as any).state === "streaming"
+  );
+  const hasAttachments = attachmentsFromMessage.length > 0;
+  // Render if there's content, attachments, edit mode, OR currently streaming
+  const shouldRenderContentContainer = 
+    hasTextContent || 
+    hasStreamingText ||
+    hasAttachments || 
+    mode === "edit" ||
+    isLoading;
+
   return (
     <div
-      className={cn("group fade-in w-full animate-in duration-300 slide-in-from-bottom-2", {
-        "is-user": message.role === "user",
-        "is-assistant": message.role === "assistant",
-      })}
+      className="w-full py-2"
       data-role={message.role}
       data-testid={`message-${message.role}`}
     >
-      <div
-        className={cn("flex w-full items-start gap-2 md:gap-3", {
-          "justify-end": message.role === "user" && mode !== "edit",
-          "justify-start": message.role === "assistant",
-        })}
-      >
-        <div
-          className={cn("flex flex-col", {
-            "gap-2 md:gap-4": message.parts?.some(
-              (p) => p.type === "text" && p.text?.trim()
-            ),
-            "w-full":
-              (message.role === "assistant" &&
-                (message.parts?.some(
-                  (p) => p.type === "text" && p.text?.trim()
-                ) ||
-                  message.parts?.some((p) => p.type.startsWith("tool-")))) ||
-              mode === "edit",
-            "max-w-[calc(100%-2.5rem)] sm:max-w-[min(fit-content,80%)]":
-              message.role === "user" && mode !== "edit",
-          })}
-        >
-          {attachmentsFromMessage.length > 0 && (
+      <div className="flex flex-col gap-3">
+        {shouldRenderContentContainer && (
+          <>
+            {attachmentsFromMessage.length > 0 && (
             <div
               className="flex flex-row justify-end gap-2"
               data-testid={"message-attachments"}
@@ -125,91 +119,27 @@ const PurePreviewMessage = ({
               if (mode === "view") {
                 const raw = extractPartText(part);
                 const textContent = sanitizeText(raw);
-                const isStreamingPart =
-                  typeof part === "object" && "state" in part &&
-                  (part as any).state === "streaming";
-
-                const looksLikeMarkdown = (s: string) =>
-                  /(^#{1,6}\s)|(```)|(`[^`])|(\*\*)|(\[.+\]\(.+\))|(!\[)/m.test(s);
-
-                const looksLikeCsv = (s: string) => {
-                  if (!s) return false;
-                  const lines = s.split(/\r?\n/).filter((l) => l.trim().length > 0);
-                  if (lines.length < 2) return false;
-                  const counts = lines.slice(0, Math.min(5, lines.length)).map((l) => l.split(",").length);
-                  // If most of the lines have more than 1 column and counts are similar
-                  const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
-                  return avg >= 2 && Math.min(...counts) / Math.max(...counts) >= 0.5;
-                };
-
-                const looksLikeEmail = (s: string) => {
-                  if (!s) return false;
-                  const hasHeaders = /(From:|To:|Subject:)/i.test(s);
-                  return hasHeaders;
-                };
-
+                
+                // Greyscale bubble styling for both user and assistant messages
                 return (
-                  <div key={key}>
-                    {message.role === "user" ? (
-                      <MessageContent
-                        className="w-fit rounded-2xl px-3 py-2 text-white"
-                        style={{ backgroundColor: "#006cff" }}
-                        data-testid="message-content"
-                      >
-                        {looksLikeCsv(textContent) ? (
-                          <div className="p-2">
-                            <div className="mb-2 text-xs text-muted-foreground">Spreadsheet</div>
-                            <div className="h-64 overflow-hidden rounded border">
-                              <SpreadsheetEditor
-                                content={textContent}
-                                saveContent={() => null}
-                                currentVersionIndex={0}
-                                isCurrentVersion={true}
-                                status={isStreamingPart ? "streaming" : "idle"}
-                              />
-                            </div>
-                          </div>
-                        ) : looksLikeEmail(textContent) ? (
-                          <div className="rounded-lg border p-3">
-                            <div className="mb-2 text-sm font-medium">Email</div>
-                            <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
-                          </div>
-                        ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
-                          <Response>{textContent}</Response>
-                        ) : (
-                          <span data-testid="message-text">{textContent}</span>
-                        )}
-                      </MessageContent>
-                    ) : (
-                      <MessageContent
-                        className="text-foreground"
-                        data-testid="message-content"
-                      >
-                        {looksLikeCsv(textContent) ? (
-                          <div className="p-2">
-                            <div className="mb-2 text-xs text-muted-foreground">Spreadsheet</div>
-                            <div className="h-64 overflow-hidden rounded border">
-                              <SpreadsheetEditor
-                                content={textContent}
-                                saveContent={() => null}
-                                currentVersionIndex={0}
-                                isCurrentVersion={true}
-                                status={isStreamingPart ? "streaming" : "idle"}
-                              />
-                            </div>
-                          </div>
-                        ) : looksLikeEmail(textContent) ? (
-                          <div className="rounded-lg border p-3">
-                            <div className="mb-2 text-sm font-medium">Email</div>
-                            <pre className="whitespace-pre-wrap text-sm">{textContent}</pre>
-                          </div>
-                        ) : isStreamingPart || looksLikeMarkdown(textContent) ? (
-                          <Response>{textContent}</Response>
-                        ) : (
-                          <span data-testid="message-text">{textContent}</span>
-                        )}
-                      </MessageContent>
-                    )}
+                  <div key={key} className={cn(
+                    "flex",
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  )}>
+                    <MessageContent
+                      className={cn(
+                        "w-fit max-w-[85%] rounded-2xl px-4 py-2.5",
+                        {
+                          "bg-zinc-700 dark:bg-zinc-700 text-white":
+                            message.role === "user",
+                          "bg-zinc-800 dark:bg-zinc-800 text-zinc-100":
+                            message.role === "assistant",
+                        }
+                      )}
+                      data-testid="message-content"
+                    >
+                      <Response>{textContent}</Response>
+                    </MessageContent>
                   </div>
                 );
               }
@@ -429,7 +359,8 @@ const PurePreviewMessage = ({
               vote={vote}
             />
           )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -440,11 +371,16 @@ export const PreviewMessage = PurePreviewMessage;
 export const ThinkingMessage = () => {
   return (
     <div
-      className="group/message fade-in w-full animate-in duration-300 slide-in-from-bottom-2"
+      className="flex items-center gap-1 text-muted-foreground text-sm py-2"
       data-role="assistant"
       data-testid="message-assistant-loading"
     >
-      <MessageSkeleton />
+      <span>Thinking</span>
+      <span className="inline-flex">
+        <span className="animate-pulse">.</span>
+        <span className="animate-pulse" style={{ animationDelay: '0.2s' }}>.</span>
+        <span className="animate-pulse" style={{ animationDelay: '0.4s' }}>.</span>
+      </span>
     </div>
   );
 };

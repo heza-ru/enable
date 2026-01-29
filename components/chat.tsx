@@ -140,7 +140,8 @@ export function Chat({
     userNameRef.current = loadedUserName;
     setUserRole(loadedUserRole);
     userRoleRef.current = loadedUserRole;
-  }, [mapRoleToPersona]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Create chat in IndexedDB on mount and load messages
   useEffect(() => {
@@ -367,7 +368,8 @@ export function Chat({
       setHasAppendedQuery(true);
       window.history.replaceState({}, "", `/chat/${id}`);
     }
-  }, [query, sendMessage, hasAppendedQuery, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, hasAppendedQuery, id]); // Remove sendMessage to prevent loops
 
   const { data: votes } = useSWR<Vote[]>(
     messages.length >= 2 ? `/api/vote?chatId=${id}` : null,

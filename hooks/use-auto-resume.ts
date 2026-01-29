@@ -33,7 +33,7 @@ export function useAutoResume({
 
     // we intentionally run this once
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoResume, initialMessages.at, resumeStream]);
+  }, [autoResume]);
 
   useEffect(() => {
     if (!dataStream) {
@@ -49,5 +49,6 @@ export function useAutoResume({
       const message = JSON.parse(dataPart.data);
       setMessages([...initialMessages, message]);
     }
-  }, [dataStream, initialMessages, setMessages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataStream]);
 }
