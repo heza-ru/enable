@@ -418,6 +418,18 @@ html {
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Ensure AI response text is always visible */
+  [data-role="assistant"] {
+    color: hsl(var(--foreground));
+  }
+  
+  [data-role="assistant"] p,
+  [data-role="assistant"] span,
+  [data-role="assistant"] li,
+  [data-role="assistant"] div {
+    color: inherit;
+  }
 }
 
 /* ============================================
