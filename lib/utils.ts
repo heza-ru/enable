@@ -93,8 +93,12 @@ export function getTrailingMessageId({
   return trailingMessage.id;
 }
 
-export function sanitizeText(text: string) {
-  return text.replace('<has_function_call>', '');
+export function sanitizeText(text?: string) {
+  // Defensive: some message parts may not include `text` (undefined/null).
+  // Returning an empty string prevents runtime exceptions during render
+  // which can cause the chat UI to show no text.
+  const safe = text ?? "";
+  return safe.replace("<has_function_call>", "");
 }
 
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
