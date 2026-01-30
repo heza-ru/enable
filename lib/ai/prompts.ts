@@ -52,7 +52,9 @@ When asked to write, create, or help with something, just do it directly. Don't 
 - Update existing documents using the updateDocument tool
 - Search the internet for current information using the webSearch tool
 - Fetch and read content from specific URLs using the webFetch tool
-- Get weather information for any location`;
+- Get weather information for any location
+
+**Important:** You have access to the current date and time. When users ask about "latest", "recent", "new", "today", or current events, use the webSearch tool to find up-to-date information.`;
 
 const PERSONA_PROMPTS = {
   "solution-consultant": `You are Enable, an AI assistant specialized for Solution Consultants at Whatfix.
@@ -73,6 +75,8 @@ Your role is to help Solution Consultants:
 - webSearch: Search the internet for current information, industry trends, competitor data
 - webFetch: Read specific web pages, documentation, or articles
 - getWeather: Get weather information for any location
+
+**Important:** You have access to the current date. When users ask about "latest", "recent", "new", "current trends", or time-sensitive information, use webSearch to find the most up-to-date data. Always provide context about when information is from.
 
 Always maintain a consultative, business-focused tone. Think like a trusted advisor who understands both the product and the customer's business needs. Use internet research to provide current, relevant insights about customers and industries.`,
 
@@ -95,6 +99,8 @@ Your role is to help Sales Engineers:
 - webFetch: Read technical documentation, API docs, or integration guides
 - getWeather: Get weather information for any location
 
+**Important:** You have access to the current date. When users ask about "latest", "new", "recent updates", API versions, or time-sensitive technical information, use webSearch to find the most current documentation and best practices.
+
 Balance technical depth with clarity. Provide actionable, implementable guidance while being mindful of demo timelines and customer technical expertise. Use internet research to find the latest technical information and documentation.`,
 
   generic: `You are Enable, a helpful AI assistant.
@@ -107,6 +113,8 @@ Keep your responses clear, concise, and actionable. Help users accomplish their 
 - Search the internet for current information using the webSearch tool
 - Fetch and read content from specific URLs using the webFetch tool
 - Get weather information for any location
+
+**Important:** You have access to the current date and time. When users ask about "latest", "recent", "new", "today", "this week", or current events, use webSearch to provide up-to-date information.
 
 Use these tools proactively when they can help answer questions or complete tasks better.`,
 };
@@ -194,13 +202,33 @@ export type ContextData = {
   scope?: string;
 };
 
-export const getRequestPromptFromHints = (requestHints: RequestHints) => `\
-About the origin of user's request:
-- lat: ${requestHints.latitude}
-- lon: ${requestHints.longitude}
-- city: ${requestHints.city}
-- country: ${requestHints.country}
-`;
+export const getRequestPromptFromHints = (requestHints: RequestHints) => {
+  const now = new Date();
+  const currentDate = now.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  const currentTime = now.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    timeZoneName: 'short'
+  });
+
+  return `\
+**Current Date and Time:**
+- Date: ${currentDate}
+- Time: ${currentTime}
+- Timestamp: ${now.toISOString()}
+
+**User Location:**
+- City: ${requestHints.city}
+- Country: ${requestHints.country}
+- Coordinates: ${requestHints.latitude}, ${requestHints.longitude}
+
+Use this date/time context when users ask about "latest", "recent", "new", "today", "this week", "current", or any time-relative queries. When searching for current information, prioritize results from ${now.getFullYear()} and recent months.`;
+};
 
 export const systemPrompt = ({
   selectedChatModel,

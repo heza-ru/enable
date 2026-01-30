@@ -40,7 +40,7 @@ export function DocumentPreview({
   >(result ? `/api/document?id=${result.id}` : null, fetcher);
 
   const previewDocument = useMemo(() => documents?.[0], [documents]);
-  const hitboxRef = useRef<HTMLDivElement>(null);
+  const hitboxRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const element = hitboxRef.current;
@@ -127,7 +127,7 @@ export function DocumentPreview({
   if (document.kind === "text") {
     return (
       <button
-        ref={hitboxRef}
+        ref={hitboxRef as React.RefObject<HTMLButtonElement>}
         className="group relative w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-white text-left transition-all hover:border-primary/50 hover:shadow-md dark:bg-zinc-900"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
@@ -237,7 +237,7 @@ const PureHitboxLayer = ({
   result,
   setArtifact,
 }: {
-  hitboxRef: React.RefObject<HTMLDivElement>;
+  hitboxRef: React.RefObject<HTMLElement>;
   result: any;
   setArtifact: (
     updaterFn: UIArtifact | ((currentArtifact: UIArtifact) => UIArtifact)
@@ -296,7 +296,7 @@ const PureHitboxLayer = ({
           handleClick(e as any);
         }
       }}
-      ref={hitboxRef}
+      ref={hitboxRef as React.RefObject<HTMLDivElement>}
       role="button"
       tabIndex={0}
     >
@@ -386,7 +386,7 @@ const DocumentContent = ({ document }: { document: Document }) => {
       <div className={containerClassName}>
         {hasContent ? (
           <div className="space-y-1 text-xs font-mono">
-            {lines.map((line, idx) => (
+            {lines.map((line: string, idx: number) => (
               <div key={idx} className="truncate text-foreground">
                 {line.split(',').slice(0, 4).join(' | ') || '...'}
               </div>
