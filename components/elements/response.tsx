@@ -12,8 +12,9 @@ export function Response({ className, children, ...props }: ResponseProps) {
     <Streamdown
       className={cn(
         "prose prose-sm max-w-none dark:prose-invert",
-        // Inherit text color from parent
-        "[&]:text-inherit [&_*]:text-inherit",
+        // Explicit text colors - DO NOT inherit
+        "text-zinc-900 dark:text-zinc-50",
+        "[&_*]:text-zinc-900 dark:[&_*]:text-zinc-50",
         // Better spacing and typography like ChatGPT/Claude
         "[&_p]:leading-relaxed [&_p]:my-3",
         "[&_h1]:font-semibold [&_h1]:text-xl [&_h1]:mt-6 [&_h1]:mb-3",

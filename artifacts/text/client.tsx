@@ -39,9 +39,12 @@ export const textArtifact = new Artifact<"text", TextArtifactMetadata>({
 
     if (streamPart.type === "data-textDelta") {
       setArtifact((draftArtifact) => {
+        const newContent = draftArtifact.content + streamPart.data;
+        console.log('[textArtifact] Received delta:', streamPart.data);
+        console.log('[textArtifact] Total content length:', newContent.length);
         return {
           ...draftArtifact,
-          content: draftArtifact.content + streamPart.data,
+          content: newContent,
           isVisible:
             draftArtifact.status === "streaming" &&
             draftArtifact.content.length > 400 &&
