@@ -36,41 +36,46 @@ function PureChatHeader({
   const { width: windowWidth } = useWindowSize();
 
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-[#2a2836]/50 bg-background/80 px-2 py-1.5 backdrop-blur-lg transition-all duration-200 md:px-4 md:py-2">
+    <header className="sticky top-0 z-10 flex items-center gap-1 border-b border-[#2a2836]/50 bg-background/80 px-2 py-1.5 backdrop-blur-lg transition-all duration-200 md:gap-2 md:px-4 md:py-2">
       <SidebarToggle />
 
       {(!open || windowWidth < 768) && (
         <Button
-          className="order-2 ml-auto h-8 px-2 md:order-1 md:ml-0 md:h-fit md:px-2"
+          className="order-2 h-8 px-2 md:order-1 md:ml-0 md:h-fit"
           onClick={() => {
             // Force a complete navigation to home which will create a new chat
             window.location.href = "/";
           }}
+          size="icon"
           variant="outline"
         >
           <PlusIcon />
-          <span className="md:sr-only">New Chat</span>
+          <span className="sr-only md:not-sr-only md:ml-2">New Chat</span>
         </Button>
       )}
 
       {!isReadonly && (
         <>
+          {/* Hide template selector on mobile to reduce clutter */}
           {onTemplateSelect && (
-            <TemplateSelector onSelectTemplate={onTemplateSelect} />
+            <div className="hidden md:block">
+              <TemplateSelector onSelectTemplate={onTemplateSelect} />
+            </div>
           )}
 
+          {/* Hide export button on mobile, show only on tablet+ */}
           {onExportClick && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="order-2 md:order-3"
+                    className="order-2 hidden md:flex md:order-3"
                     onClick={onExportClick}
                     size="sm"
                     variant="ghost"
                   >
                     <Download className="size-4" />
-                    <span className="ml-2 hidden md:inline">Export</span>
+                    <span className="ml-2">Export</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -80,9 +85,10 @@ function PureChatHeader({
             </TooltipProvider>
           )}
 
+          {/* Hide visibility selector on mobile */}
           <VisibilitySelector
             chatId={chatId}
-            className="order-3 ml-auto md:order-4"
+            className="order-3 ml-auto hidden md:flex md:order-4"
             selectedVisibilityType={selectedVisibilityType}
           />
         </>

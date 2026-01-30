@@ -72,11 +72,11 @@ const PurePreviewMessage = ({
 
   return (
     <div
-      className="w-full py-2 animate-slide-in-bottom"
+      className="w-full py-1.5 animate-slide-in-bottom md:py-2"
       data-role={message.role}
       data-testid={`message-${message.role}`}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2 md:gap-3">
         {shouldRenderContentContainer && (
           <>
             {attachmentsFromMessage.length > 0 && (

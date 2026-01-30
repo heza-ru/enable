@@ -169,32 +169,25 @@ export const ModelSelectorLogo = ({
   provider,
   className,
 }: ModelSelectorLogoProps) => {
+  console.log('[ModelSelectorLogo] Rendering for provider:', provider);
+  
   // Use Lucide icons for Anthropic/Claude (since we only use Claude)
   if (provider === "anthropic") {
     return (
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="flex shrink-0 items-center gap-0.5">
         {/* Anthropic/AI Provider Icon */}
-        <Sparkles className={cn("size-4 shrink-0 text-primary", className)} />
+        <Sparkles className={cn("size-4 shrink-0 text-blue-500", className)} strokeWidth={2} />
         {/* Claude Model Icon */}
-        <Zap className={cn("size-3.5 shrink-0 text-orange-500", className)} />
+        <Zap className={cn("size-4 shrink-0 text-orange-500", className)} strokeWidth={2} />
       </div>
     );
   }
 
   // Fallback for other providers (with error handling)
   return (
-    <Image
-      alt={`${provider} logo`}
-      className={cn("size-4 shrink-0 dark:invert", className)}
-      height={16}
-      onError={(e) => {
-        // Hide broken image
-        e.currentTarget.style.display = "none";
-      }}
-      src={`https://models.dev/logos/${provider}.svg`}
-      unoptimized
-      width={16}
-    />
+    <div className="flex shrink-0 items-center">
+      <Sparkles className={cn("size-4 shrink-0 text-primary", className)} strokeWidth={2} />
+    </div>
   );
 };
 

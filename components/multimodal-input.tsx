@@ -388,7 +388,7 @@ function PureMultimodalInput({
           />
         </div>
         <PromptInputToolbar className="border-top-0! border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">
-          <PromptInputTools className="gap-0 sm:gap-0.5">
+          <PromptInputTools className="gap-0.5 md:gap-1">
             <AttachmentsButton
               fileInputRef={fileInputRef}
               selectedModelId={selectedModelId}
@@ -398,10 +398,13 @@ function PureMultimodalInput({
               isDisabled={status !== "ready"}
               onTranscript={handleVoiceTranscript}
             />
-            <ModelSelectorCompact
-              onModelChange={onModelChange}
-              selectedModelId={selectedModelId}
-            />
+            {/* Hide model selector on small mobile, show on tablet+ */}
+            <div className="hidden sm:block">
+              <ModelSelectorCompact
+                onModelChange={onModelChange}
+                selectedModelId={selectedModelId}
+              />
+            </div>
           </PromptInputTools>
 
           {status === "submitted" ? (
@@ -502,9 +505,9 @@ function PureModelSelectorCompact({
   return (
     <ModelSelector onOpenChange={setOpen} open={open}>
       <ModelSelectorTrigger asChild>
-        <Button className="h-8 w-[200px] justify-start gap-2 px-2" variant="ghost">
-          {provider && <ModelSelectorLogo provider={provider} />}
-          <ModelSelectorName className="flex-1">{selectedModel.name}</ModelSelectorName>
+        <Button className="h-8 w-auto min-w-[140px] justify-start gap-1.5 px-2 md:w-[200px] md:gap-2" variant="ghost">
+          <ModelSelectorLogo provider={provider || "anthropic"} />
+          <span className="flex-1 truncate text-left text-xs md:text-sm">{selectedModel.name}</span>
         </Button>
       </ModelSelectorTrigger>
       <ModelSelectorContent>
