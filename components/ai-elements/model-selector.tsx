@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ComponentProps, ReactNode } from "react";
+import { Sparkles, Zap } from "lucide-react";
 import {
   Command,
   CommandDialog,
@@ -167,16 +168,35 @@ export type ModelSelectorLogoProps = {
 export const ModelSelectorLogo = ({
   provider,
   className,
-}: ModelSelectorLogoProps) => (
-  <Image
-    alt={`${provider} logo`}
-    className={cn("size-3 dark:invert", className)}
-    height={12}
-    src={`https://models.dev/logos/${provider}.svg`}
-    unoptimized
-    width={12}
-  />
-);
+}: ModelSelectorLogoProps) => {
+  // Use Lucide icons for Anthropic/Claude (since we only use Claude)
+  if (provider === "anthropic") {
+    return (
+      <div className="flex shrink-0 items-center gap-1">
+        {/* Anthropic/AI Provider Icon */}
+        <Sparkles className={cn("size-4 shrink-0 text-primary", className)} />
+        {/* Claude Model Icon */}
+        <Zap className={cn("size-3.5 shrink-0 text-orange-500", className)} />
+      </div>
+    );
+  }
+
+  // Fallback for other providers (with error handling)
+  return (
+    <Image
+      alt={`${provider} logo`}
+      className={cn("size-4 shrink-0 dark:invert", className)}
+      height={16}
+      onError={(e) => {
+        // Hide broken image
+        e.currentTarget.style.display = "none";
+      }}
+      src={`https://models.dev/logos/${provider}.svg`}
+      unoptimized
+      width={16}
+    />
+  );
+};
 
 export type ModelSelectorLogoGroupProps = ComponentProps<"div">;
 

@@ -10,11 +10,31 @@ interface GreetingProps {
 }
 
 export const Greeting = ({ onSuggestionClick }: GreetingProps) => {
-  // Get user's name from profile
-  const [userName, setUserName] = useState("there");
+  // Get user's name from profile - initialize synchronously to avoid flash
+  const [userName, setUserName] = useState(() => {
+    if (typeof window !== "undefined") {
+      return getUserName();
+    }
+    return "there";
+  });
 
+  // Update if name changes
   useEffect(() => {
-    setUserName(getUserName());
+    const name = getUserName();
+    if (name !== userName) {
+      setUserName(name);
+    }
+  }, [userName]);
+
+  // Listen for profile updates (from onboarding)
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      const newName = getUserName();
+      setUserName(newName);
+    };
+
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
   }, []);
 
   return (

@@ -90,7 +90,7 @@ export function OnboardingDialog({
   const [apiKey, setApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [storageMode, setStorageMode] = useState<"memory" | "encrypted">(
-    "encrypted"
+    "memory"  // Changed to memory mode (most secure) as default
   );
   const [isValidating, setIsValidating] = useState(false);
   const [validationStatus, setValidationStatus] = useState<
@@ -173,7 +173,13 @@ export function OnboardingDialog({
 
       // Save API key only if provided
       if (apiKey.trim()) {
-        await storeApiKey(apiKey, storageMode);
+        // Only allow memory mode in onboarding (encrypted requires password)
+        if (storageMode === "encrypted") {
+          toast.error("Encrypted storage requires password. Using memory mode instead.");
+          await storeApiKey(apiKey, "memory");
+        } else {
+          await storeApiKey(apiKey, storageMode);
+        }
       }
 
       toast.success(
@@ -181,6 +187,10 @@ export function OnboardingDialog({
           ? `Welcome, ${name}! Enable is ready to assist you.`
           : `Welcome, ${name}! You can add your API key in Settings.`
       );
+      
+      // Trigger profile update event to refresh greeting (no page reload needed)
+      window.dispatchEvent(new Event('profileUpdated'));
+      
       onComplete();
     } catch (error) {
       console.error("Failed to save profile:", error);

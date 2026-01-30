@@ -98,7 +98,7 @@ export function SettingsDialog({
 
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [storageModeInput, setStorageModeInput] = useState<"memory" | "encrypted">(
-    "encrypted"
+    "memory"  // Changed to memory mode (most secure) as default
   );
   const [showApiKey, setShowApiKey] = useState(false);
   const [isApiKeyLoading, setIsApiKeyLoading] = useState(false);
@@ -364,10 +364,20 @@ export function SettingsDialog({
                                   return;
                                 }
 
+                                // Store with password if encrypted mode is selected
+                                if (storageModeInput === "encrypted") {
+                                  toast({ 
+                                    type: "error", 
+                                    description: "Encrypted storage requires password. Please use the API Key dialog for encrypted storage." 
+                                  });
+                                  setIsApiKeyLoading(false);
+                                  return;
+                                }
+                                
                                 await storeApiKey(apiKeyInput, storageModeInput);
                                 setApiKeyInput("");
                                 setApiKeyPresent(true);
-                                toast({ type: "success", description: "API key saved" });
+                                toast({ type: "success", description: "API key saved securely in memory" });
                               } catch (err) {
                                 console.error(err);
                                 toast({ type: "error", description: "Failed to validate or store API key" });
