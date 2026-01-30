@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useWindowSize } from "usehooks-ts";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { TemplateSelector } from "@/components/template-selector";
-import { Button } from "@/components/ui/button";
+import { MagneticButton } from "@/components/magnetic-button";
 import {
   Tooltip,
   TooltipContent,
@@ -40,8 +40,9 @@ function PureChatHeader({
       <SidebarToggle />
 
       {(!open || windowWidth < 768) && (
-        <Button
+        <MagneticButton
           className="order-2 h-8 px-2 md:order-1 md:ml-0 md:h-fit"
+          magneticStrength={0.2}
           onClick={() => {
             // Force a complete navigation to home which will create a new chat
             window.location.href = "/";
@@ -51,7 +52,7 @@ function PureChatHeader({
         >
           <PlusIcon />
           <span className="sr-only md:not-sr-only md:ml-2">New Chat</span>
-        </Button>
+        </MagneticButton>
       )}
 
       {!isReadonly && (
@@ -68,15 +69,16 @@ function PureChatHeader({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
+                  <MagneticButton
                     className="order-2 hidden md:flex md:order-3"
+                    magneticStrength={0.2}
                     onClick={onExportClick}
                     size="sm"
                     variant="ghost"
                   >
                     <Download className="size-4" />
                     <span className="ml-2">Export</span>
-                  </Button>
+                  </MagneticButton>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Export or share this conversation</p>

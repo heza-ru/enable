@@ -59,14 +59,14 @@ const ROLES: Array<{
   description: string;
 }> = [
   {
-    value: "Solution Consultant",
+    value: "Solutions Consultant",
     icon: Briefcase,
-    description: "Focus on business value, demos, and customer success",
+    description: "Strategic partner driving ROI conversations and business outcomes",
   },
   {
     value: "Sales Engineer",
     icon: Target,
-    description: "Focus on technical validation, POCs, and implementation",
+    description: "Technical expert handling integrations, POCs, and security validation",
   },
 ];
 

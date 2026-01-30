@@ -3,7 +3,7 @@
  * Manages user identity, role, and personalization settings
  */
 
-export type UserRole = "Solution Consultant" | "Sales Engineer";
+export type UserRole = "Solutions Consultant" | "Sales Engineer";
 
 export interface UserProfile {
   name: string;

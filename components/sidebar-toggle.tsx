@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { SidebarLeftIcon } from "./icons";
-import { Button } from "./ui/button";
+import { MagneticButton } from "./magnetic-button";
 
 export function SidebarToggle({
   className,
@@ -18,14 +18,15 @@ export function SidebarToggle({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button
+        <MagneticButton
           className={cn("h-8 px-2 md:h-fit md:px-2", className)}
           data-testid="sidebar-toggle-button"
+          magneticStrength={0.25}
           onClick={toggleSidebar}
           variant="outline"
         >
           <SidebarLeftIcon size={16} />
-        </Button>
+        </MagneticButton>
       </TooltipTrigger>
       <TooltipContent align="start" className="hidden md:block">
         Toggle Sidebar

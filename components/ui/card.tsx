@@ -1,20 +1,59 @@
 import * as React from "react";
+import { gsap } from "gsap";
 
 import { cn } from "@/lib/utils";
 
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    className={cn(
-      "rounded-lg border border-[#2a2836] bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
-      className
-    )}
-    ref={ref}
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const combinedRef = ref || cardRef;
+
+  // Add GSAP hover animation for cards
+  React.useEffect(() => {
+    const element = (combinedRef as React.RefObject<HTMLDivElement>).current;
+    if (!element) return;
+
+    const handleMouseEnter = () => {
+      gsap.to(element, {
+        y: -6,
+        boxShadow: "0 12px 40px rgba(0, 0, 0, 0.15)",
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(element, {
+        y: 0,
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    };
+
+    element.addEventListener("mouseenter", handleMouseEnter);
+    element.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      element.removeEventListener("mouseenter", handleMouseEnter);
+      element.removeEventListener("mouseleave", handleMouseLeave);
+      gsap.killTweensOf(element);
+    };
+  }, [combinedRef]);
+
+  return (
+    <div
+      className={cn(
+        "rounded-lg border border-[#2a2836] bg-card text-card-foreground shadow-sm transition-all duration-300",
+        className
+      )}
+      ref={combinedRef as React.Ref<HTMLDivElement>}
+      {...props}
+    />
+  );
+});
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<

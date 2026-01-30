@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { PlusIcon, TrashIcon } from "@/components/icons";
 import { SidebarHistory } from "@/components/sidebar-history";
 import { SidebarUserNav } from "@/components/sidebar-user-nav";
-import { Button } from "@/components/ui/button";
+import { MagneticButton } from "@/components/magnetic-button";
 import {
   Sidebar,
   SidebarContent,
@@ -69,14 +69,15 @@ export function AppSidebar() {
               <div className="flex flex-row gap-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
+                    <MagneticButton
                       className="h-8 p-1 md:h-fit md:p-2"
+                      magneticStrength={0.25}
                       onClick={() => setShowDeleteAllDialog(true)}
                       type="button"
                       variant="ghost"
                     >
                       <TrashIcon />
-                    </Button>
+                    </MagneticButton>
                   </TooltipTrigger>
                   <TooltipContent align="end" className="hidden md:block">
                     Delete All Chats
@@ -84,8 +85,9 @@ export function AppSidebar() {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
+                    <MagneticButton
                       className="h-8 p-1 md:h-fit md:p-2"
+                      magneticStrength={0.25}
                       onClick={() => {
                         setOpenMobile(false);
                         router.push("/");
@@ -95,7 +97,7 @@ export function AppSidebar() {
                       variant="ghost"
                     >
                       <PlusIcon />
-                    </Button>
+                    </MagneticButton>
                   </TooltipTrigger>
                   <TooltipContent align="end" className="hidden md:block">
                     New Chat

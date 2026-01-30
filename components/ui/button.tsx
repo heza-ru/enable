@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot as SlotPrimitive } from "radix-ui";
 import * as React from "react";
+import { gsap } from "gsap";
 
 import { cn } from "@/lib/utils";
 
@@ -43,10 +44,75 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? SlotPrimitive.Slot : "button";
+    const buttonRef = React.useRef<HTMLButtonElement>(null);
+    const combinedRef = ref || buttonRef;
+
+  // Add GSAP hover and click animations
+  React.useEffect(() => {
+    const element = (combinedRef as React.RefObject<HTMLButtonElement>).current;
+    if (!element || asChild || props.disabled) return;
+
+    // Check if hover scale is disabled (for absolutely positioned elements)
+    const disableHoverScale = element.dataset.disableHoverScale === "true";
+
+    const handleMouseEnter = () => {
+      if (!disableHoverScale) {
+        gsap.to(element, {
+          scale: 1.02,
+          duration: 0.2,
+          ease: "power2.out",
+        });
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (!disableHoverScale) {
+        gsap.to(element, {
+          scale: 1,
+          duration: 0.2,
+          ease: "power2.out",
+        });
+      }
+    };
+
+    const handleMouseDown = () => {
+      if (!disableHoverScale) {
+        gsap.to(element, {
+          scale: 0.98,
+          duration: 0.1,
+          ease: "power2.in",
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (!disableHoverScale) {
+        gsap.to(element, {
+          scale: 1.02,
+          duration: 0.15,
+          ease: "elastic.out(1, 0.3)",
+        });
+      }
+    };
+
+    element.addEventListener("mouseenter", handleMouseEnter);
+    element.addEventListener("mouseleave", handleMouseLeave);
+    element.addEventListener("mousedown", handleMouseDown);
+    element.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      element.removeEventListener("mouseenter", handleMouseEnter);
+      element.removeEventListener("mouseleave", handleMouseLeave);
+      element.removeEventListener("mousedown", handleMouseDown);
+      element.removeEventListener("mouseup", handleMouseUp);
+      gsap.killTweensOf(element);
+    };
+  }, [combinedRef, asChild, props.disabled]);
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
+        ref={combinedRef as React.Ref<HTMLButtonElement>}
         {...props}
       />
     );

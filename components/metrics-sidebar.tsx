@@ -104,7 +104,8 @@ export function MetricsSidebar() {
     >
       {/* Collapse/Expand Button */}
       <Button
-        className="absolute left-0 top-1/2 z-10 h-16 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-muted dark:bg-zinc-800 p-0 shadow-md hover:bg-accent"
+        className="absolute left-0 top-1/2 z-10 h-16 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-muted dark:bg-zinc-800 p-0 shadow-md hover:bg-accent hover:shadow-lg transition-all"
+        data-disable-hover-scale="true"
         onClick={() => setIsCollapsed(!isCollapsed)}
         size="sm"
         variant="outline"
