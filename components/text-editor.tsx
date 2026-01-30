@@ -63,7 +63,19 @@ function PureEditor({
 
       editorRef.current = new EditorView(containerRef.current, {
         state,
+        attributes: {
+          style: 'color: #18181b !important;',
+          class: 'ProseMirror-content',
+        },
       });
+
+      // Force text color on the editor element directly
+      if (containerRef.current) {
+        const proseMirrorDiv = containerRef.current.querySelector('.ProseMirror');
+        if (proseMirrorDiv) {
+          (proseMirrorDiv as HTMLElement).style.color = '#18181b';
+        }
+      }
     }
 
     return () => {
@@ -146,7 +158,11 @@ function PureEditor({
   }, [suggestions, content]);
 
   return (
-    <div className="prose dark:prose-invert relative" ref={containerRef} />
+    <div 
+      className="prose prose-zinc prose-lg dark:prose-invert relative w-full max-w-none" 
+      style={{ color: 'hsl(var(--foreground))' }}
+      ref={containerRef} 
+    />
   );
 }
 

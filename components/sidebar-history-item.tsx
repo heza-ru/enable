@@ -43,8 +43,8 @@ const PureChatItem = ({
   });
 
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={isActive}>
+    <SidebarMenuItem className="animate-fade-in">
+      <SidebarMenuButton asChild isActive={isActive} className="transition-all duration-200 hover:scale-[1.02]">
         <Link href={`/chat/${chat.id}`} onClick={() => setOpenMobile(false)}>
           <span>{chat.title}</span>
         </Link>

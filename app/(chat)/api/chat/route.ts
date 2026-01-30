@@ -8,14 +8,19 @@ import {
 } from "ai";
 import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
 import { getLanguageModel } from "@/lib/ai/providers";
+import { createDocument } from "@/lib/ai/tools/create-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
+import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
+import { updateDocument } from "@/lib/ai/tools/update-document";
+import { webFetch } from "@/lib/ai/tools/web-fetch";
+import { webSearch } from "@/lib/ai/tools/web-search";
 import { isProductionEnvironment } from "@/lib/constants";
 import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
 import { generateUUID } from "@/lib/utils";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function POST(request: Request) {
   let requestBody: PostRequestBody;
@@ -102,8 +107,17 @@ export async function POST(request: Request) {
               userRole,
             }),
             messages: modelMessages,
-            stopWhen: stepCountIs(5),
-            experimental_activeTools: isReasoningModel ? [] : ["getWeather"],
+            stopWhen: stepCountIs(10), // Allow multiple tool calls and text generation
+            experimental_activeTools: isReasoningModel
+              ? []
+              : [
+                  "getWeather",
+                  "webSearch",
+                  "webFetch",
+                  "createDocument",
+                  "updateDocument",
+                  "requestSuggestions",
+                ],
             providerOptions: isReasoningModel
               ? {
                   anthropic: {
@@ -113,10 +127,51 @@ export async function POST(request: Request) {
               : undefined,
             tools: {
               getWeather,
+              webSearch,
+              webFetch,
+              createDocument: createDocument({
+                session: { user: { id: "anonymous" } } as any,
+                dataStream,
+                apiKey,
+              }),
+              updateDocument: updateDocument({
+                session: { user: { id: "anonymous" } } as any,
+                dataStream,
+                apiKey,
+              }),
+              requestSuggestions: requestSuggestions({
+                session: { user: { id: "anonymous" } } as any,
+                dataStream,
+              }),
             },
             experimental_telemetry: {
               isEnabled: isProductionEnvironment,
               functionId: "stream-text",
+            },
+            onFinish: async ({ usage, response, text, steps }) => {
+              // Log usage data and response details for debugging
+              console.log("[Chat API] onFinish called:", {
+                inputTokens: usage?.inputTokens,
+                outputTokens: usage?.outputTokens,
+                totalTokens: usage?.totalTokens,
+                textLength: text?.length || 0,
+                stepsCount: steps?.length || 0,
+              });
+              console.log("[Chat API] Generated text preview:", text?.substring(0, 200));
+
+              // Send usage data to client via data stream
+              if (usage && (usage.inputTokens || usage.outputTokens)) {
+                dataStream.write({
+                  type: "data-usage",
+                  data: {
+                    inputTokens: usage.inputTokens || 0,
+                    outputTokens: usage.outputTokens || 0,
+                    totalTokens: usage.totalTokens || 0,
+                  },
+                  transient: false,
+                });
+                console.log("[Chat API] Usage data sent to client");
+              }
             },
           });
 
@@ -136,7 +191,21 @@ export async function POST(request: Request) {
       },
       onError: (error) => {
         console.error("[Chat API] Stream error:", error);
-        return "Oops, an error occurred!";
+        
+        // Provide more specific error messages
+        if (error instanceof Error) {
+          if (error.message.includes("context_length_exceeded") || error.message.includes("too long")) {
+            return "The conversation has become too long. Please start a new chat to continue.";
+          }
+          if (error.message.includes("rate_limit")) {
+            return "Rate limit exceeded. Please wait a moment and try again.";
+          }
+          if (error.message.includes("overloaded")) {
+            return "The AI service is currently overloaded. Please try again in a moment.";
+          }
+        }
+        
+        return "An error occurred while processing your message. Please try again.";
       },
     });
 

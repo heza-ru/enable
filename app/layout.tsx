@@ -7,10 +7,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://enable.whatfix.com"),
-  title: "Enable by Whatfix",
+  metadataBase: new URL("https://enable.ai"),
+  title: "enable",
   description:
-    "AI-powered assistant for Solution Consultants and Sales Engineers at Whatfix.",
+    "AI-powered assistant for professionals.",
   icons: {
     icon: [
       { url: "/logo.svg", type: "image/svg+xml" },

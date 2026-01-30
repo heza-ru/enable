@@ -216,10 +216,11 @@ export function ExportDialog({
         </DialogHeader>
 
         <div className="mt-4 space-y-3">
-          {exportOptions.map((option) => (
+          {exportOptions.map((option, index) => (
             <div
-              className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50"
+              className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-4 transition-all duration-300 hover:bg-muted/50 hover:shadow-md hover:scale-[1.02] animate-slide-in-bottom"
               key={option.id}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="flex items-start gap-3">
                 <span className="text-2xl">{option.icon}</span>

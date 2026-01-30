@@ -3,14 +3,12 @@
 import {
   Key,
   MessageSquare,
-  Palette,
   RotateCcw,
   Settings,
   Sparkles,
   Trash2,
   User,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import {
   clearApiKey,
@@ -26,13 +24,6 @@ import {
   type UserRole,
   updateUserProfile,
 } from "@/lib/storage/user-profile";
-import {
-  applyTheme,
-  getStoredTheme,
-  saveTheme,
-  type ThemeName,
-  themes,
-} from "@/lib/themes";
 import { toast } from "./toast";
 import {
   AlertDialog,
@@ -88,14 +79,14 @@ export function SettingsDialog({
       setInternalOpen(newOpen);
     }
   };
-  const [profile, setProfile] = useState(getUserProfile());
+  const initialProfile = getUserProfile();
 
-  const [name, setName] = useState(profile?.name || "");
+  const [name, setName] = useState(initialProfile?.name || "");
   const [role, setRole] = useState<UserRole>(
-    profile?.role || "Solution Consultant"
+    initialProfile?.role || "Solution Consultant"
   );
   const [personalizationPrompt, setPersonalizationPrompt] = useState(
-    profile?.personalizationPrompt || ""
+    initialProfile?.personalizationPrompt || ""
   );
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -113,44 +104,16 @@ export function SettingsDialog({
   const [isApiKeyLoading, setIsApiKeyLoading] = useState(false);
   const [apiKeyValidationMessage, setApiKeyValidationMessage] = useState("");
 
-  const {
-    theme: nextTheme,
-    resolvedTheme,
-    setTheme: setNextTheme,
-  } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState<ThemeName>(
-    getStoredTheme()
-  );
-
   // Reload profile when dialog opens
   useEffect(() => {
     if (open) {
       const currentProfile = getUserProfile();
-      setProfile(currentProfile);
       setName(currentProfile?.name || "");
       setRole(currentProfile?.role || "Solution Consultant");
       setPersonalizationPrompt(currentProfile?.personalizationPrompt || "");
-      setSelectedTheme(getStoredTheme());
       setApiKeyPresent(hasApiKey());
     }
   }, [open]);
-
-  const handleThemeChange = (themeName: ThemeName) => {
-    setSelectedTheme(themeName);
-    saveTheme(themeName);
-
-    // Apply theme colors based on resolved mode (handles system preference)
-    const mode = resolvedTheme === "dark" ? "dark" : "light";
-    applyTheme(themeName, mode);
-
-    // Force a reflow to ensure CSS variables are applied
-    document.documentElement.offsetHeight;
-
-    toast({
-      type: "success",
-      description: `${themes[themeName].name} theme applied`,
-    });
-  };
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -233,7 +196,7 @@ export function SettingsDialog({
             </Button>
           </DialogTrigger>
         )}
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px] bg-background border-border">
+        <DialogContent className="max-h-[90vh] overflow-y-auto scrollbar-hide sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="size-5" />
@@ -286,75 +249,6 @@ export function SettingsDialog({
 
             <Separator />
 
-            {/* Theme Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Palette className="size-4 text-muted-foreground" />
-                <h3 className="font-semibold text-sm">Appearance</h3>
-              </div>
-
-              <div className="space-y-3 pl-6">
-                <div className="space-y-2">
-                  <Label>Color Theme</Label>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {Object.values(themes).map((theme) => (
-                      <button
-                        className={`group relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all hover:scale-105 ${
-                          selectedTheme === theme.id
-                            ? "border-primary bg-primary/5"
-                            : "border-[#2a2836] hover:border-primary/50"
-                        }`}
-                        key={theme.id}
-                        onClick={() => handleThemeChange(theme.id)}
-                        type="button"
-                      >
-                        <div className="flex w-full gap-1">
-                          <div
-                            className="h-6 flex-1 rounded"
-                            style={{
-                              background: `hsl(${theme.colors.dark.primary})`,
-                            }}
-                          />
-                          <div
-                            className="h-6 flex-1 rounded"
-                            style={{
-                              background: `hsl(${theme.colors.dark.accent})`,
-                            }}
-                          />
-                        </div>
-                        <span className="text-center text-xs font-medium">
-                          {theme.name}
-                        </span>
-                        {selectedTheme === theme.id && (
-                          <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                            <svg
-                              className="size-3"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="3"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M5 13l4 4L19 7"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground text-xs">
-                    Choose a color theme for the interface. Themes adapt to
-                    light/dark mode.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
             {/* Personalization Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -390,7 +284,7 @@ export function SettingsDialog({
               </div>
 
               <div className="space-y-2 pl-6">
-                <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="flex items-center justify-between rounded-lg border p-3 transition-all duration-200 hover:shadow-md hover:scale-[1.01]">
                   <div className="flex items-center gap-3">
                     <MessageSquare className="size-4 text-muted-foreground" />
                     <div>
@@ -409,7 +303,7 @@ export function SettingsDialog({
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="flex items-center justify-between rounded-lg border p-3 transition-all duration-200 hover:shadow-md hover:scale-[1.01]">
                   <div className="flex items-center gap-3">
                       <Key className="size-4 text-muted-foreground" />
                       <div>

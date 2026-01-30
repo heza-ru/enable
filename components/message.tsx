@@ -72,7 +72,7 @@ const PurePreviewMessage = ({
 
   return (
     <div
-      className="w-full py-2"
+      className="w-full py-2 animate-slide-in-bottom"
       data-role={message.role}
       data-testid={`message-${message.role}`}
     >
@@ -127,15 +127,15 @@ const PurePreviewMessage = ({
                     message.role === "user" ? "justify-end" : "justify-start"
                   )}>
                     <MessageContent
-                      className={cn(
-                        "w-fit max-w-[85%] rounded-2xl px-4 py-2.5",
-                        {
-                          "bg-zinc-700 dark:bg-zinc-700 text-white":
-                            message.role === "user",
-                          "bg-zinc-800 dark:bg-zinc-800 text-zinc-100":
-                            message.role === "assistant",
-                        }
-                      )}
+                  className={cn(
+                    "w-fit max-w-[85%] rounded-2xl px-4 py-2.5",
+                    {
+                      "bg-zinc-700 dark:bg-zinc-700 text-white":
+                        message.role === "user",
+                      "bg-zinc-900 dark:bg-zinc-900 text-zinc-50":
+                        message.role === "assistant",
+                    }
+                  )}
                       data-testid="message-content"
                     >
                       <Response>{textContent}</Response>
@@ -163,6 +163,27 @@ const PurePreviewMessage = ({
                   </div>
                 );
               }
+            }
+
+            if (type === "tool-webSearch" || type === "tool-webFetch") {
+              const { toolCallId, state } = part;
+              
+              // Only show loading state - hide completed tool results
+              // The AI will summarize the information in its text response
+              if (state === "input-streaming" || state === "input-available") {
+                return (
+                  <div className="w-full max-w-md" key={toolCallId}>
+                    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2 text-muted-foreground text-sm">
+                      <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+                      <span>{type === "tool-webSearch" ? "Searching..." : "Fetching content..."}</span>
+                    </div>
+                  </div>
+                );
+              }
+
+              // Don't show completed tool results - they clutter the UI
+              // The AI's response will contain the summarized information
+              return null;
             }
 
             if (type === "tool-getWeather") {
@@ -260,7 +281,32 @@ const PurePreviewMessage = ({
             }
 
             if (type === "tool-createDocument") {
-              const { toolCallId } = part;
+              const { toolCallId, state } = part;
+
+              // Show loading state for document creation
+              if (state === "input-streaming" || state === "input-available") {
+                const kindLabel = part.input && "kind" in part.input 
+                  ? part.input.kind === "presentation" ? "presentation" 
+                  : part.input.kind === "code" ? "code" 
+                  : part.input.kind === "sheet" ? "spreadsheet"
+                  : "document"
+                  : "document";
+
+                return (
+                  <div className="w-[min(100%,600px)]" key={toolCallId}>
+                    <Tool className="w-full" defaultOpen={true}>
+                      <ToolHeader state={state} type={type} />
+                      <ToolContent>
+                        <div className="flex items-center gap-2 px-4 py-3 text-muted-foreground text-sm">
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+                          <span>Creating {kindLabel}...</span>
+                        </div>
+                        {state === "input-available" && <ToolInput input={part.input} />}
+                      </ToolContent>
+                    </Tool>
+                  </div>
+                );
+              }
 
               if (part.output && "error" in part.output) {
                 return (
@@ -283,7 +329,25 @@ const PurePreviewMessage = ({
             }
 
             if (type === "tool-updateDocument") {
-              const { toolCallId } = part;
+              const { toolCallId, state } = part;
+
+              // Show loading state for document updates
+              if (state === "input-streaming" || state === "input-available") {
+                return (
+                  <div className="w-[min(100%,600px)]" key={toolCallId}>
+                    <Tool className="w-full" defaultOpen={true}>
+                      <ToolHeader state={state} type={type} />
+                      <ToolContent>
+                        <div className="flex items-center gap-2 px-4 py-3 text-muted-foreground text-sm">
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+                          <span>Updating document...</span>
+                        </div>
+                        {state === "input-available" && <ToolInput input={part.input} />}
+                      </ToolContent>
+                    </Tool>
+                  </div>
+                );
+              }
 
               if (part.output && "error" in part.output) {
                 return (
@@ -368,14 +432,50 @@ const PurePreviewMessage = ({
 
 export const PreviewMessage = PurePreviewMessage;
 
-export const ThinkingMessage = () => {
+export const ThinkingMessage = ({ 
+  message 
+}: { 
+  message?: ChatMessage 
+}) => {
+  // Detect if a tool is being called
+  const activeTool = message?.parts?.find(
+    (part) => "state" in part && 
+    (part.state === "input-streaming" || part.state === "input-available")
+  );
+
+  const getActivityMessage = () => {
+    if (!activeTool || !("type" in activeTool)) {
+      return "Thinking";
+    }
+
+    const toolType = activeTool.type as string;
+    
+    if (toolType === "tool-webSearch") return "Searching the web";
+    if (toolType === "tool-webFetch") return "Fetching content";
+    if (toolType === "tool-createDocument") {
+      const input = activeTool.input as any;
+      if (input?.kind === "presentation") return "Creating presentation";
+      if (input?.kind === "code") return "Generating code";
+      if (input?.kind === "sheet") return "Creating spreadsheet";
+      return "Creating document";
+    }
+    if (toolType === "tool-updateDocument") return "Updating document";
+    if (toolType === "tool-getWeather") return "Getting weather";
+    if (toolType === "tool-requestSuggestions") return "Generating suggestions";
+    
+    return "Thinking";
+  };
+
+  const activityMessage = getActivityMessage();
+
   return (
     <div
-      className="flex items-center gap-1 text-muted-foreground text-sm py-2"
+      className="flex items-center gap-2 text-muted-foreground text-sm py-2"
       data-role="assistant"
       data-testid="message-assistant-loading"
     >
-      <span>Thinking</span>
+      <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+      <span>{activityMessage}</span>
       <span className="inline-flex">
         <span className="animate-pulse">.</span>
         <span className="animate-pulse" style={{ animationDelay: '0.2s' }}>.</span>

@@ -1,7 +1,7 @@
-<h1 align="center">Enable by Whatfix</h1>
+<h1 align="center">enable</h1>
 
 <p align="center">
-    A free, secure, internal AI assistant for Solution Consultants and Sales Engineers at Whatfix. Powered by Claude API with client-side architecture.
+    A free, secure AI assistant for professionals. Powered by Claude API with client-side architecture.
 </p>
 
 <p align="center">
@@ -20,12 +20,20 @@
 - **Cost Tracking** - Real-time token counting and cost estimation per message, chat, and session
 - **Artifact Support** - Code editor, spreadsheet editor, image generation, and structured outputs
 - **Demo Mode** - One-click conversation reset for seamless live demos
+- **🌐 Internet Connectivity** - Web search and URL fetching for current information and research
+- **📊 Presentation Creation** - AI-powered slide deck generation with visual presentation viewer
 
 ### Manus-Level UX
 - **Persona Selector** - Solution Consultant, Sales Engineer, or Generic Assistant modes
 - **Context Layering** - Pin customer, industry, and scope context to all conversations
 - **Prompt Shortcuts** - Quick access to demo scripts, slide outlines, objection handling, competitive comparisons
 - **Structured Outputs** - JSON rendering for slides, emails, walkthroughs, and more
+
+### AI-Powered Tools
+- **Web Search** - Search the internet for current information, industry trends, and research
+- **Web Fetch** - Read and analyze content from specific URLs and documentation
+- **Presentation Generator** - Create professional slide decks with master deck template integration
+- **Weather Information** - Get current weather data for any location
 
 ### Security & Privacy
 - **Client-Side API Keys** - Your API keys never leave your browser
@@ -53,6 +61,20 @@ On first launch, you'll be prompted to enter your Claude API key. Choose:
 - Choose your persona (Solution Consultant or Sales Engineer)
 - Add customer context for personalized responses
 - Use prompt shortcuts for common tasks (Cmd/Ctrl + K)
+
+### 4. Use AI-Powered Features
+
+**Internet Research:**
+- "Search for latest trends in [industry]"
+- "Find information about [company name]"
+- "Read this article: [URL]"
+
+**Presentation Creation:**
+- "Create a presentation about [topic]"
+- "Make a sales deck for [customer]"
+- "Generate a 10-slide pitch deck on [subject]"
+
+See [INTERNET_AND_PRESENTATION_FEATURES.md](./INTERNET_AND_PRESENTATION_FEATURES.md) for detailed documentation.
 
 ## Security
 

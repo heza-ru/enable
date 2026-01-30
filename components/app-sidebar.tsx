@@ -52,16 +52,16 @@ export function AppSidebar() {
       <Sidebar className="group-data-[side=left]:border-r-0">
         <SidebarHeader>
           <SidebarMenu>
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between animate-fade-in">
               <Link
-                className="flex flex-row items-center gap-3"
+                className="flex flex-row items-center gap-3 transition-transform duration-200 hover:scale-105"
                 href="/"
                 onClick={() => {
                   setOpenMobile(false);
                 }}
               >
                 <img
-                  alt="Enable Logo"
+                  alt="enable logo"
                   className="h-10 w-auto object-contain"
                   src="/logo.svg"
                 />

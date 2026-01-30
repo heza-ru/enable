@@ -8,9 +8,10 @@ import type { ChatMessage } from "@/lib/types";
 type UpdateDocumentProps = {
   session: Session;
   dataStream: UIMessageStreamWriter<ChatMessage>;
+  apiKey?: string;
 };
 
-export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
+export const updateDocument = ({ session, dataStream, apiKey }: UpdateDocumentProps) =>
   tool({
     description: "Update a document with the given description.",
     inputSchema: z.object({
@@ -48,6 +49,7 @@ export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
         description,
         dataStream,
         session,
+        apiKey,
       });
 
       dataStream.write({ type: "data-finish", data: null, transient: true });

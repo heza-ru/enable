@@ -292,7 +292,7 @@ function PureArtifact({
                   damping: 30,
                 },
               }}
-              className="relative h-dvh w-[400px] shrink-0 bg-muted dark:bg-background"
+              className="relative h-dvh w-[400px] shrink-0 bg-zinc-50 dark:bg-zinc-950 rounded-l-2xl"
               exit={{
                 opacity: 0,
                 x: 0,
@@ -329,7 +329,7 @@ function PureArtifact({
                   <MultimodalInput
                     attachments={attachments}
                     chatId={chatId}
-                    className="bg-background dark:bg-muted"
+                    className="bg-white dark:bg-zinc-900"
                     input={input}
                     messages={messages}
                     selectedModelId={selectedModelId}
@@ -382,7 +382,7 @@ function PureArtifact({
                     },
                   }
             }
-            className="fixed flex h-dvh flex-col overflow-y-scroll border-[#2a2836] bg-background md:border-l dark:bg-muted"
+            className="fixed flex h-dvh flex-col overflow-hidden border-[#2a2836] bg-white md:border-l dark:bg-zinc-900 rounded-r-2xl"
             exit={{
               opacity: 0,
               scale: 0.5,
@@ -413,7 +413,7 @@ function PureArtifact({
                   }
             }
           >
-            <div className="flex flex-row items-start justify-between p-2 border-b border-[#2a2836]">
+            <div className="flex flex-row items-start justify-between p-2 border-b border-border bg-white dark:bg-zinc-900">
               <div className="flex flex-row items-start gap-4">
                 <ArtifactCloseButton />
 
@@ -451,26 +451,28 @@ function PureArtifact({
               />
             </div>
 
-            <div className="h-full max-w-full! items-center overflow-y-scroll bg-background dark:bg-muted">
-              <artifactDefinition.content
-                content={
-                  isCurrentVersion
-                    ? artifact.content
-                    : getDocumentContentById(currentVersionIndex)
-                }
-                currentVersionIndex={currentVersionIndex}
-                getDocumentContentById={getDocumentContentById}
-                isCurrentVersion={isCurrentVersion}
-                isInline={false}
-                isLoading={isDocumentsFetching && !artifact.content}
-                metadata={metadata}
-                mode={mode}
-                onSaveContent={saveContent}
-                setMetadata={setMetadata}
-                status={artifact.status}
-                suggestions={[]}
-                title={artifact.title}
-              />
+            <div className="relative flex h-full max-w-full flex-col overflow-hidden bg-white dark:bg-zinc-900">
+              <div className="relative flex-1 overflow-auto">
+                <artifactDefinition.content
+                  content={
+                    isCurrentVersion
+                      ? artifact.content
+                      : getDocumentContentById(currentVersionIndex)
+                  }
+                  currentVersionIndex={currentVersionIndex}
+                  getDocumentContentById={getDocumentContentById}
+                  isCurrentVersion={isCurrentVersion}
+                  isInline={false}
+                  isLoading={isDocumentsFetching && !artifact.content}
+                  metadata={metadata}
+                  mode={mode}
+                  onSaveContent={saveContent}
+                  setMetadata={setMetadata}
+                  status={artifact.status}
+                  suggestions={[]}
+                  title={artifact.title}
+                />
+              </div>
 
               <AnimatePresence>
                 {isCurrentVersion && (

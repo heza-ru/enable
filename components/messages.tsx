@@ -86,7 +86,15 @@ function PureMessages({
               msg.parts?.some(
                 (part) => "state" in part && part.state === "approval-responded"
               )
-            ) && <ThinkingMessage />}
+            ) && (
+              <ThinkingMessage 
+                message={
+                  messages.length > 0 && messages[messages.length - 1].role === "assistant"
+                    ? messages[messages.length - 1]
+                    : undefined
+                }
+              />
+            )}
 
           <div
             className="min-h-[24px] min-w-[24px] shrink-0"

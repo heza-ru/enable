@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Presentation } from "lucide-react";
+import { Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
 import { toast } from "sonner";
@@ -35,13 +35,6 @@ function PureChatHeader({
   const { open } = useSidebar();
   const { width: windowWidth } = useWindowSize();
 
-  const handleDemoMode = () => {
-    // Clear current conversation and start fresh
-    router.push("/");
-    router.refresh();
-    toast.success("Demo mode activated - starting fresh conversation");
-  };
-
   return (
     <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-[#2a2836]/50 bg-background/80 px-2 py-1.5 backdrop-blur-lg transition-all duration-200 md:px-4 md:py-2">
       <SidebarToggle />
@@ -65,25 +58,6 @@ function PureChatHeader({
           {onTemplateSelect && (
             <TemplateSelector onSelectTemplate={onTemplateSelect} />
           )}
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="order-1 md:order-2"
-                  onClick={handleDemoMode}
-                  size="sm"
-                  variant="ghost"
-                >
-                  <Presentation className="size-4" />
-                  <span className="ml-2 hidden md:inline">Demo Mode</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Start fresh conversation (perfect for live demos)</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
           {onExportClick && (
             <TooltipProvider>

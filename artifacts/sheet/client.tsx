@@ -18,6 +18,11 @@ export const sheetArtifact = new Artifact<"sheet", Metadata>({
   initialize: () => null,
   onStreamPart: ({ setArtifact, streamPart }) => {
     if (streamPart.type === "data-sheetDelta") {
+      console.log("[Sheet Artifact] Received sheetDelta:", {
+        dataLength: streamPart.data?.length,
+        dataPreview: streamPart.data?.substring(0, 100),
+      });
+
       setArtifact((draftArtifact) => ({
         ...draftArtifact,
         content: streamPart.data,
@@ -26,15 +31,23 @@ export const sheetArtifact = new Artifact<"sheet", Metadata>({
       }));
     }
   },
-  content: ({ content, currentVersionIndex, onSaveContent, status }) => {
+  content: ({ content, currentVersionIndex, onSaveContent, status, isInline }) => {
+    console.log("[Sheet Artifact] Rendering content:", {
+      contentLength: content?.length,
+      isInline,
+      status,
+    });
+
     return (
-      <SpreadsheetEditor
-        content={content}
-        currentVersionIndex={currentVersionIndex}
-        isCurrentVersion={true}
-        saveContent={onSaveContent}
-        status={status}
-      />
+      <div className="size-full overflow-hidden">
+        <SpreadsheetEditor
+          content={content}
+          currentVersionIndex={currentVersionIndex}
+          isCurrentVersion={true}
+          saveContent={onSaveContent}
+          status={status}
+        />
+      </div>
     );
   },
   actions: [

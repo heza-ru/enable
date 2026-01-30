@@ -105,11 +105,37 @@ export function EnhancedCodeBlock({
 // Hook into streamdown's markdown rendering
 export function createMarkdownComponents() {
   return {
+    // Custom paragraph renderer that prevents nesting issues
+    p({ children, ...props }: any) {
+      // Check if children contain block-level elements
+      const hasBlockContent = Array.isArray(children) && children.some((child: any) => {
+        return child?.type?.name === 'EnhancedCodeBlock' || 
+               (child?.props?.className && child.props.className.includes('group relative'));
+      });
+      
+      // If paragraph contains block elements, render as div instead
+      if (hasBlockContent) {
+        return <div className="my-3" {...props}>{children}</div>;
+      }
+      
+      // Normal paragraph
+      return <p {...props}>{children}</p>;
+    },
     code({ inline, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || "");
       const language = match ? match[1] : "";
+      const code = String(children).replace(/\n$/, "");
+      
+      // Treat as inline if:
+      // 1. Explicitly marked as inline
+      // 2. No language specified and no newlines (likely inline code)
+      // 3. Very short code without language
+      const isInlineCode = 
+        inline || 
+        (!language && !code.includes('\n')) ||
+        (!language && code.length < 60);
 
-      if (inline) {
+      if (isInlineCode) {
         return (
           <code
             className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm"
@@ -122,7 +148,7 @@ export function createMarkdownComponents() {
 
       return (
         <EnhancedCodeBlock language={language} showLineNumbers>
-          {String(children).replace(/\n$/, "")}
+          {code}
         </EnhancedCodeBlock>
       );
     },

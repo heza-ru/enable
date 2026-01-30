@@ -190,7 +190,7 @@ export function OnboardingDialog({
 
   return (
     <Dialog open={open}>
-      <DialogContent className="sm:max-w-[600px] bg-card !border-[#2a2836] shadow-2xl">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader className="space-y-4">
           <div className="flex items-center justify-center">
             {step === 1 && (

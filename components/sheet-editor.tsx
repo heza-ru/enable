@@ -23,24 +23,57 @@ const PureSpreadsheetEditor = ({ content, saveContent }: SheetEditorProps) => {
   const { resolvedTheme } = useTheme();
 
   const parseData = useMemo(() => {
-    if (!content) {
-      return new Array(MIN_ROWS).fill(new Array(MIN_COLS).fill(""));
-    }
-    const result = parse<string[]>(content, { skipEmptyLines: true });
-
-    const paddedData = result.data.map((row) => {
-      const paddedRow = [...row];
-      while (paddedRow.length < MIN_COLS) {
-        paddedRow.push("");
-      }
-      return paddedRow;
+    console.log("[SpreadsheetEditor] Parsing content:", {
+      contentLength: content?.length,
+      contentPreview: content?.substring(0, 100),
+      hasContent: !!content,
     });
 
-    while (paddedData.length < MIN_ROWS) {
-      paddedData.push(new Array(MIN_COLS).fill(""));
+    if (!content || content.trim() === "") {
+      console.log("[SpreadsheetEditor] No content provided, using empty grid");
+      return new Array(MIN_ROWS).fill(new Array(MIN_COLS).fill(""));
     }
 
-    return paddedData;
+    try {
+      const result = parse<string[]>(content, { 
+        skipEmptyLines: true,
+        delimiter: ",",
+        header: false,
+      });
+
+      console.log("[SpreadsheetEditor] Parse result:", {
+        rowCount: result.data.length,
+        firstRow: result.data[0],
+        errors: result.errors,
+      });
+
+      if (result.errors.length > 0) {
+        console.error("[SpreadsheetEditor] Parse errors:", result.errors);
+      }
+
+      if (!result.data || result.data.length === 0) {
+        console.warn("[SpreadsheetEditor] No data parsed from content");
+        return new Array(MIN_ROWS).fill(new Array(MIN_COLS).fill(""));
+      }
+
+      const paddedData = result.data.map((row) => {
+        const paddedRow = [...row];
+        while (paddedRow.length < MIN_COLS) {
+          paddedRow.push("");
+        }
+        return paddedRow;
+      });
+
+      while (paddedData.length < MIN_ROWS) {
+        paddedData.push(new Array(MIN_COLS).fill(""));
+      }
+
+      console.log("[SpreadsheetEditor] Final padded data rows:", paddedData.length);
+      return paddedData;
+    } catch (error) {
+      console.error("[SpreadsheetEditor] Error parsing CSV:", error);
+      return new Array(MIN_ROWS).fill(new Array(MIN_COLS).fill(""));
+    }
   }, [content]);
 
   const columns = useMemo(() => {
@@ -71,7 +104,7 @@ const PureSpreadsheetEditor = ({ content, saveContent }: SheetEditorProps) => {
   }, []);
 
   const initialRows = useMemo(() => {
-    return parseData.map((row, rowIndex) => {
+    const rows = parseData.map((row, rowIndex) => {
       const rowData: any = {
         id: rowIndex,
         rowNumber: rowIndex + 1,
@@ -83,6 +116,16 @@ const PureSpreadsheetEditor = ({ content, saveContent }: SheetEditorProps) => {
 
       return rowData;
     });
+
+    console.log("[SpreadsheetEditor] Generated rows:", {
+      rowCount: rows.length,
+      firstRow: rows[0],
+      hasData: rows.some((row, idx) => 
+        Object.values(row).some(val => val !== "" && val !== idx + 1)
+      ),
+    });
+
+    return rows;
   }, [parseData, columns]);
 
   const [localRows, setLocalRows] = useState(initialRows);
@@ -106,24 +149,39 @@ const PureSpreadsheetEditor = ({ content, saveContent }: SheetEditorProps) => {
     saveContent(newCsvContent, true);
   };
 
+  console.log("[SpreadsheetEditor] Rendering with:", {
+    rowCount: localRows.length,
+    columnCount: columns.length,
+    theme: resolvedTheme,
+  });
+
   return (
-    <DataGrid
-      className={resolvedTheme === "dark" ? "rdg-dark" : "rdg-light"}
-      columns={columns}
-      defaultColumnOptions={{
-        resizable: true,
-        sortable: true,
-      }}
-      enableVirtualization
-      onCellClick={(args) => {
-        if (args.column.key !== "rowNumber") {
-          args.selectCell(true);
-        }
-      }}
-      onRowsChange={handleRowsChange}
-      rows={localRows}
-      style={{ height: "100%" }}
-    />
+    <div className="size-full overflow-hidden">
+      <DataGrid
+        className={cn(
+          resolvedTheme === "dark" ? "rdg-dark" : "rdg-light"
+        )}
+        columns={columns}
+        defaultColumnOptions={{
+          resizable: true,
+          sortable: true,
+        }}
+        enableVirtualization
+        onCellClick={(args) => {
+          if (args.column.key !== "rowNumber") {
+            args.selectCell(true);
+          }
+        }}
+        onRowsChange={handleRowsChange}
+        rows={localRows}
+        style={{ 
+          height: "100%", 
+          width: "100%",
+          blockSize: "100%",
+          inlineSize: "100%",
+        }}
+      />
+    </div>
   );
 };
 

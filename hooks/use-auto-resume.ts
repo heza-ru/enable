@@ -47,7 +47,9 @@ export function useAutoResume({
 
     if (dataPart.type === "data-appendMessage") {
       const message = JSON.parse(dataPart.data);
-      setMessages([...initialMessages, message]);
+      // CRITICAL FIX: Use functional update to append to current messages, not initialMessages
+      // Using initialMessages was causing all messages to be replaced during streaming
+      setMessages((currentMessages) => [...currentMessages, message]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataStream]);

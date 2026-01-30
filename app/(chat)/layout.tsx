@@ -27,7 +27,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 async function SidebarWrapper({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const isCollapsed = cookieStore.get("sidebar_state")?.value !== "true";
+  // Chat history sidebar should be open by default
+  const isCollapsed = cookieStore.get("sidebar_state")?.value === "false";
 
   return (
     <SidebarProvider defaultOpen={!isCollapsed}>

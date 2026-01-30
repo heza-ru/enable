@@ -1,6 +1,7 @@
 import type { UIMessageStreamWriter } from "ai";
 import type { Session } from "next-auth";
 import { codeDocumentHandler } from "@/artifacts/code/server";
+import { presentationDocumentHandler } from "@/artifacts/presentation/server";
 import { sheetDocumentHandler } from "@/artifacts/sheet/server";
 import { textDocumentHandler } from "@/artifacts/text/server";
 import type { ArtifactKind } from "@/components/artifact";
@@ -21,6 +22,7 @@ export type CreateDocumentCallbackProps = {
   title: string;
   dataStream: UIMessageStreamWriter<ChatMessage>;
   session: Session;
+  apiKey?: string;
 };
 
 export type UpdateDocumentCallbackProps = {
@@ -28,6 +30,7 @@ export type UpdateDocumentCallbackProps = {
   description: string;
   dataStream: UIMessageStreamWriter<ChatMessage>;
   session: Session;
+  apiKey?: string;
 };
 
 export type DocumentHandler<T = ArtifactKind> = {
@@ -49,6 +52,7 @@ export function createDocumentHandler<T extends ArtifactKind>(config: {
         title: args.title,
         dataStream: args.dataStream,
         session: args.session,
+        apiKey: args.apiKey,
       });
 
       if (args.session?.user?.id) {
@@ -69,6 +73,7 @@ export function createDocumentHandler<T extends ArtifactKind>(config: {
         description: args.description,
         dataStream: args.dataStream,
         session: args.session,
+        apiKey: args.apiKey,
       });
 
       if (args.session?.user?.id) {
@@ -93,6 +98,12 @@ export const documentHandlersByArtifactKind: DocumentHandler[] = [
   textDocumentHandler,
   codeDocumentHandler,
   sheetDocumentHandler,
+  presentationDocumentHandler,
 ];
 
-export const artifactKinds = ["text", "code", "sheet"] as const;
+export const artifactKinds = [
+  "text",
+  "code",
+  "sheet",
+  "presentation",
+] as const;

@@ -146,24 +146,41 @@ export function Chat({
   // Create chat in IndexedDB on mount and load messages
   useEffect(() => {
     const initialize = async () => {
-      // Create chat in IndexedDB if it doesn't exist
-      const existingChat = await getChat(id);
-      if (existingChat) {
-        // Load existing messages from IndexedDB if no initial messages provided
-        if (initialMessages.length === 0) {
-          const storedMessages = await getMessagesByChatId(id);
-          if (storedMessages.length > 0) {
-            console.log(
-              "[Chat] Loading",
-              storedMessages.length,
-              "messages from IndexedDB"
-            );
-            // Use stored messages directly (they're already in ChatMessage format)
-            setMessages(storedMessages as ChatMessage[]);
+      try {
+        // Create chat in IndexedDB if it doesn't exist
+        const existingChat = await getChat(id);
+        if (existingChat) {
+          console.log("[Chat] Found existing chat:", id);
+          // Load existing messages from IndexedDB if no initial messages provided
+          if (initialMessages.length === 0) {
+            console.log("[Chat] Loading messages from IndexedDB for chat:", id);
+            const storedMessages = await getMessagesByChatId(id);
+            console.log("[Chat] Loaded messages count:", storedMessages.length);
+            
+            if (storedMessages.length > 0) {
+              console.log(
+                "[Chat] Restoring",
+                storedMessages.length,
+                "messages from IndexedDB"
+              );
+              // Use stored messages directly (they're already in ChatMessage format)
+              setMessages(storedMessages as ChatMessage[]);
+            } else {
+              console.log("[Chat] No messages found in IndexedDB for this chat");
+            }
+          } else {
+            console.log("[Chat] Using initial messages provided:", initialMessages.length);
           }
+        } else {
+          console.log("[Chat] Creating new chat:", id);
+          await createChat("New chat", initialChatModel, id);
         }
-      } else {
-        await createChat("New chat", initialChatModel, id);
+      } catch (error) {
+        console.error("[Chat] Error initializing chat:", error);
+        toast({
+          type: "error",
+          description: "Failed to load chat history. Please refresh the page.",
+        });
       }
     };
     initialize();
@@ -259,6 +276,13 @@ export function Chat({
     }),
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
+      
+      // Capture usage data when it arrives
+      if (dataPart.type === "data-usage" && dataPart.data) {
+        console.log("[Chat Client] Received usage data:", dataPart.data);
+        // Store temporarily for onFinish callback
+        (window as any).__lastUsageData = dataPart.data;
+      }
     },
     onFinish: async ({ messages: finishedMessages }) => {
       // Save messages to IndexedDB
@@ -278,26 +302,29 @@ export function Chat({
           (m) => m.role === "assistant"
         );
         if (assistantMessage) {
-          console.log("[Cost Tracking] Checking for token data:", {
-            messageId: assistantMessage.id,
-            messageKeys: Object.keys(assistantMessage),
-            hasMetadata: !!(assistantMessage as any).experimental_providerMetadata,
-          });
+          // First, try to get usage data from the data stream
+          let tokenUsage = (window as any).__lastUsageData;
           
-          // Try to extract token usage from message (cast to any to access metadata)
-          const messageWithMetadata = assistantMessage as any;
-          let tokenUsage = null;
-          
-          // Try multiple sources for token data
-          if (messageWithMetadata.experimental_providerMetadata) {
-            tokenUsage = extractTokenUsage(messageWithMetadata.experimental_providerMetadata);
-          } else if (messageWithMetadata.metadata) {
-            tokenUsage = extractTokenUsage(messageWithMetadata.metadata);
-          } else if (messageWithMetadata.usage) {
-            tokenUsage = extractTokenUsage(messageWithMetadata);
+          if (!tokenUsage) {
+            // Fallback: Extract token usage from message metadata
+            console.log("[Cost Tracking] Checking message metadata:", {
+              messageId: assistantMessage.id,
+              messageKeys: Object.keys(assistantMessage),
+            });
+            
+            const messageWithMetadata = assistantMessage as any;
+            
+            // Try multiple sources for token data
+            if (messageWithMetadata.experimental_providerMetadata) {
+              tokenUsage = extractTokenUsage(messageWithMetadata.experimental_providerMetadata);
+            } else if (messageWithMetadata.metadata) {
+              tokenUsage = extractTokenUsage(messageWithMetadata.metadata);
+            } else if (messageWithMetadata.usage) {
+              tokenUsage = extractTokenUsage(messageWithMetadata);
+            }
           }
           
-          console.log("[Cost Tracking] Token usage extracted:", tokenUsage);
+          console.log("[Cost Tracking] Token usage:", tokenUsage);
 
           if (tokenUsage && (tokenUsage.inputTokens > 0 || tokenUsage.outputTokens > 0)) {
             await saveCost(
@@ -312,8 +339,11 @@ export function Chat({
               inputTokens: tokenUsage.inputTokens,
               outputTokens: tokenUsage.outputTokens,
             });
+            
+            // Clear the temporary storage
+            delete (window as any).__lastUsageData;
           } else {
-            console.warn("[Cost Tracking] No valid token usage found in assistant message");
+            console.warn("[Cost Tracking] No valid token usage found");
           }
         }
       } catch (error) {
@@ -347,8 +377,21 @@ export function Chat({
       }
     },
     onError: (error) => {
+      console.error("[Chat Client] Error occurred:", error);
+      
       if (error instanceof ChatSDKError) {
         toast({ type: "error", description: error.message });
+      } else if (error instanceof Error) {
+        // Show error message to user
+        toast({ 
+          type: "error", 
+          description: error.message || "An error occurred. Please try again." 
+        });
+      } else {
+        toast({ 
+          type: "error", 
+          description: "An unexpected error occurred. Please try again." 
+        });
       }
     },
   });

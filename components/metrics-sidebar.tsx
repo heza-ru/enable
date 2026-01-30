@@ -64,7 +64,8 @@ function MiniChart({ positive = true }: { positive?: boolean }) {
 }
 
 export function MetricsSidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Metrics sidebar should be collapsed (closed) by default
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [metrics, setMetrics] = useState({
     totalCost: 0,
     sessionCost: 0,
@@ -77,9 +78,15 @@ export function MetricsSidebar() {
   const loadMetrics = async () => {
     try {
       const summary = await getCostSummary();
+      console.log("[Metrics] Loaded summary:", {
+        totalInputTokens: summary.totalInputTokens,
+        totalOutputTokens: summary.totalOutputTokens,
+        totalMessages: summary.totalMessages,
+        totalCost: summary.totalCost,
+      });
       setMetrics(summary);
     } catch (error) {
-      console.error("Failed to load metrics:", error);
+      console.error("[Metrics] Failed to load metrics:", error);
     }
   };
 
@@ -97,7 +104,7 @@ export function MetricsSidebar() {
     >
       {/* Collapse/Expand Button */}
       <Button
-        className="absolute left-0 top-1/2 z-10 h-16 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border bg-background p-0 shadow-md hover:bg-muted"
+        className="absolute left-0 top-1/2 z-10 h-16 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-muted dark:bg-zinc-800 p-0 shadow-md hover:bg-accent"
         onClick={() => setIsCollapsed(!isCollapsed)}
         size="sm"
         variant="outline"
@@ -116,7 +123,6 @@ export function MetricsSidebar() {
             icon={<DollarSign className="size-3.5" />}
             subtitle="Total cost"
             title="Lifetime"
-            trend={<MiniChart positive />}
             value={formatCost(metrics.totalCost)}
           />
 
@@ -124,7 +130,6 @@ export function MetricsSidebar() {
             icon={<Activity className="size-3.5" />}
             subtitle="Messages sent"
             title="Activity"
-            trend={<MiniChart positive />}
             value={metrics.totalMessages.toString()}
           />
 
@@ -132,11 +137,6 @@ export function MetricsSidebar() {
             icon={<Wallet className="size-3.5" />}
             subtitle="Current session"
             title="Session Cost"
-            trend={
-              <MiniChart
-                positive={metrics.sessionCost < metrics.totalCost * 0.1}
-              />
-            }
             value={formatCost(metrics.sessionCost)}
           />
 
@@ -152,7 +152,11 @@ export function MetricsSidebar() {
             subtitle="Input tokens"
             title="Token Usage"
             value={
-              Math.round(metrics.totalInputTokens / 1000).toLocaleString() + "K"
+              metrics.totalInputTokens >= 10000
+                ? `${(metrics.totalInputTokens / 1000).toFixed(2)}K`
+                : metrics.totalInputTokens >= 1000
+                  ? `${(metrics.totalInputTokens / 1000).toFixed(1)}K`
+                  : metrics.totalInputTokens.toLocaleString()
             }
           />
 
@@ -161,8 +165,11 @@ export function MetricsSidebar() {
             subtitle="Output tokens"
             title="Generation"
             value={
-              Math.round(metrics.totalOutputTokens / 1000).toLocaleString() +
-              "K"
+              metrics.totalOutputTokens >= 10000
+                ? `${(metrics.totalOutputTokens / 1000).toFixed(2)}K`
+                : metrics.totalOutputTokens >= 1000
+                  ? `${(metrics.totalOutputTokens / 1000).toFixed(1)}K`
+                  : metrics.totalOutputTokens.toLocaleString()
             }
           />
         </div>
